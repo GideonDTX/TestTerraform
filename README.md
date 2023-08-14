@@ -1,7 +1,4 @@
 # dtx-terraform
-<<<<<<< HEAD
-Terraform is an infrastructure-as-code tool. This repo will describe all the infrastructure for each environment, build it out, and detect any drift in the live configuration. It will also be the mechanism which we will actually deploy the application.
-=======
 
 ## Background
 
@@ -36,4 +33,3 @@ This Terraform configuration uses the Terraform AWS S3 backend and OCI's S3-comp
   * DTX_PaaS-Test - ocid1.compartment.oc1..aaaaaaaaee3wnhqiddvsxbly63hxdk6vgzcs2spvd2d6krnwp6f7tg77g5va
   * DTX_PaaS-Sandbox - ocid1.compartment.oc1..aaaaaaaabavsmgb2to2nczlztwy5w3lcopfajpf5hvum4tcz2i2bzt7pd77a
   * DTX_PaaS-Prod - ocid1.compartment.oc1..aaaaaaaabbdhkjwvax2aipzcur3vcuaedudswwdualjwykimeensgjzbht7q
->>>>>>> 45f0d31 (initial skeleton with VNC module)
