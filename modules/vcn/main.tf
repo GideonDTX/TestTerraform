@@ -43,10 +43,16 @@ resource "oci_core_internet_gateway" "this" {
 }
 
 # nat
+resource "oci_core_public_ip" "nat" {
+  compartment_id = var.compartment_id
+  lifetime       = "RESERVED"
+}
+
 resource "oci_core_nat_gateway" "this" {
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.this.id
   display_name   = "nat gateway for ${var.name}"
+  public_ip_id   = oci_core_public_ip.nat.id
 }
 
 # service
@@ -128,10 +134,10 @@ resource "oci_core_route_table" "this" {
     for_each = each.value.type == "private" ? [1] : []
 
     content {
-    description       = "All subnets route Oracle services through service gateway"
-    destination       = data.oci_core_services.this.services[0]["cidr_block"]
-    destination_type  = "SERVICE_CIDR_BLOCK"
-    network_entity_id = oci_core_service_gateway.this.id
+      description       = "All subnets route Oracle services through service gateway"
+      destination       = data.oci_core_services.this.services[0]["cidr_block"]
+      destination_type  = "SERVICE_CIDR_BLOCK"
+      network_entity_id = oci_core_service_gateway.this.id
     }
   }
 

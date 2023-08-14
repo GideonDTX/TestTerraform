@@ -10,7 +10,7 @@ output "compartment_id" {
   value = var.compartment_id
 }
 
-output "subnet_ids" {
+output "subnets" {
   value = {
     for name, subnet in oci_core_subnet.this :
       name => {
