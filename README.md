@@ -24,12 +24,12 @@ This Terraform configuration uses the Terraform AWS S3 backend and OCI's S3-comp
 
 ### Tenancy
 
-* Tenancy - ocid1.tenancy.oc1..aaaaaaaan3et4ej5l24sbsejheik5bv4fjradz7xgqtr5didj5accbdctmbq
+* Tenancy - `ocid1.tenancy.oc1..aaaaaaaan3et4ej5l24sbsejheik5bv4fjradz7xgqtr5didj5accbdctmbq`
 
 ### Compartments
 
-* DTX_PaaS - ocid1.compartment.oc1..aaaaaaaac7cwwdhbssjfcg6tjx47s3gaoqumovoxahcrmmgaryegybvourla
-  * DTX_PaaS-Dev - ocid1.compartment.oc1..aaaaaaaaimjp3jzwblxkr2ptywfbb6zqt7k4ykvluue6g37gqiedf6yd5sqq
-  * DTX_PaaS-Test - ocid1.compartment.oc1..aaaaaaaaee3wnhqiddvsxbly63hxdk6vgzcs2spvd2d6krnwp6f7tg77g5va
-  * DTX_PaaS-Sandbox - ocid1.compartment.oc1..aaaaaaaabavsmgb2to2nczlztwy5w3lcopfajpf5hvum4tcz2i2bzt7pd77a
-  * DTX_PaaS-Prod - ocid1.compartment.oc1..aaaaaaaabbdhkjwvax2aipzcur3vcuaedudswwdualjwykimeensgjzbht7q
+* DTX_PaaS - `ocid1.compartment.oc1..aaaaaaaac7cwwdhbssjfcg6tjx47s3gaoqumovoxahcrmmgaryegybvourla`
+  * DTX_PaaS-Dev - `ocid1.compartment.oc1..aaaaaaaaimjp3jzwblxkr2ptywfbb6zqt7k4ykvluue6g37gqiedf6yd5sqq`
+  * DTX_PaaS-Test - `ocid1.compartment.oc1..aaaaaaaaee3wnhqiddvsxbly63hxdk6vgzcs2spvd2d6krnwp6f7tg77g5va`
+  * DTX_PaaS-Sandbox - `ocid1.compartment.oc1..aaaaaaaabavsmgb2to2nczlztwy5w3lcopfajpf5hvum4tcz2i2bzt7pd77a`
+  * DTX_PaaS-Prod - `ocid1.compartment.oc1..aaaaaaaabbdhkjwvax2aipzcur3vcuaedudswwdualjwykimeensgjzbht7q`
