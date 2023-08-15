@@ -106,6 +106,8 @@ remote_state {
     region   = "me-jeddah-1"
     endpoint = "https://axnfm4jb3i73.compat.objectstorage.me-jeddah-1.oraclecloud.com"
 
+    profile = "dtx"
+
     skip_region_validation      = true
     skip_credentials_validation = true
     skip_metadata_api_check     = true
