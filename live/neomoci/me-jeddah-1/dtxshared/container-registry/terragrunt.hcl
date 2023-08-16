@@ -15,6 +15,33 @@ inputs = {
 
   repositories = [
     ### Images Hosted at DockerHub - These are replicated because of docker.io service limits
+    {
+      name = "dtx/library/ubuntu",
+    },
+    {
+      name = "dtx/library/neo4j",
+    },
+    {
+      name = "dtx/calico/apiserver",
+    },
+    {
+      name = "dtx/calico/csi",
+    },
+    {
+      name = "dtx/calico/kube-controllers",
+    },
+    {
+      name = "dtx/calico/node-driver-registrar",
+    },
+    {
+      name = "dtx/calico/node",
+    },
+    {
+      name = "dtx/calico/pod2daemon-flexvol",
+    },
+    {
+      name = "dtx/calico/typha",
+    },
     ### Images for Platform Services
     {
       name = "dtx/datasourcesvc",
