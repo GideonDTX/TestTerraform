@@ -29,6 +29,7 @@ This Terraform configuration uses the Terraform AWS S3 backend and OCI's S3-comp
 ### Compartments
 
 * DTX_PaaS - `ocid1.compartment.oc1..aaaaaaaac7cwwdhbssjfcg6tjx47s3gaoqumovoxahcrmmgaryegybvourla`
+  * DTX_PaaS-Shared - `ocid1.compartment.oc1..aaaaaaaaelhj7c2mf6thajka6uhgccy6ps7j5a2nssvzrvpul3ypaodavflq`
   * DTX_PaaS-Dev - `ocid1.compartment.oc1..aaaaaaaaimjp3jzwblxkr2ptywfbb6zqt7k4ykvluue6g37gqiedf6yd5sqq`
   * DTX_PaaS-Test - `ocid1.compartment.oc1..aaaaaaaaee3wnhqiddvsxbly63hxdk6vgzcs2spvd2d6krnwp6f7tg77g5va`
   * DTX_PaaS-Sandbox - `ocid1.compartment.oc1..aaaaaaaabavsmgb2to2nczlztwy5w3lcopfajpf5hvum4tcz2i2bzt7pd77a`
