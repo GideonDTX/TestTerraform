@@ -12,5 +12,5 @@ include "root" {
 
 inputs = {
   compartment_id = local.env_vars.locals.compartment_id
-  name           = "mirrana.io"
+  name           = "mirrana.ai"
 }

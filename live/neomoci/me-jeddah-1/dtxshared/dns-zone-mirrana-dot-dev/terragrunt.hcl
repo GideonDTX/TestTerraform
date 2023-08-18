@@ -3,7 +3,7 @@ locals {
 }
 
 terraform {
-  source = "${get_parent_terragrunt_dir()}/../modules//dns-zone"
+  source = "${get_parent_terragrunt_dir()}/../modules//dns-and-email"
 }
 
 include "root" {
