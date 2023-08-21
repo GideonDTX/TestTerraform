@@ -73,6 +73,27 @@ resource "oci_core_default_security_list" "this" {
   manage_default_resource_id = oci_core_vcn.this.default_security_list_id
 }
 
+## Vault and Encryption Key (if requested)
+
+# create a root vault
+resource "oci_kms_vault" "this" {
+  compartment_id = var.compartment_id
+  display_name   = "root"
+  vault_type     = "DEFAULT"
+}
+
+# create a master key in the vault
+resource "oci_kms_key" "this" {
+  compartment_id      = var.compartment_id
+  display_name        = "Master key for root vault in ${var.name} VCN"
+  management_endpoint = oci_kms_vault.this.management_endpoint
+
+  key_shape {
+    algorithm = "AES"
+    length    = 32
+  }
+}
+
 ## Subnets
 
 resource "oci_core_subnet" "this" {

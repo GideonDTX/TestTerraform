@@ -24,7 +24,8 @@ This Terraform configuration uses the Terraform AWS S3 backend and OCI's S3-comp
 
 ### Tenancy
 
-* Tenancy - `ocid1.tenancy.oc1..aaaaaaaan3et4ej5l24sbsejheik5bv4fjradz7xgqtr5didj5accbdctmbq`
+* ID - `ocid1.tenancy.oc1..aaaaaaaan3et4ej5l24sbsejheik5bv4fjradz7xgqtr5didj5accbdctmbq`
+* Namespace - `axnfm4jb3i73`
 
 ### Compartments
 

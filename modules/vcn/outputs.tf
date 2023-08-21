@@ -10,6 +10,14 @@ output "compartment_id" {
   value = var.compartment_id
 }
 
+output "vault_id" {
+  value = oci_kms_vault.this.id
+}
+
+output "kms_id" {
+  value = oci_kms_key.this.id
+}
+
 output "subnets" {
   value = {
     for name, subnet in oci_core_subnet.this :

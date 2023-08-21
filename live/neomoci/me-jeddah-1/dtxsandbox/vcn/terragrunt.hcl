@@ -24,6 +24,7 @@ locals {
     time_exceeded = 11
   }
 
+  # these repeat in lots of places so we set these as local variables
   ingress_icmp = [
       {
         description = "Allow incoming icmp echo-reply from anywhere"
