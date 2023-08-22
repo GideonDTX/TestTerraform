@@ -39,9 +39,12 @@ resource "oci_dns_rrset" "dkim" {
   zone_name_or_id = var.name
 
   items {
-    domain = oci_email_dkim.this.dns_subdomain_name
+    # On CNAMEs, OCI DNS expects no ending period on the domain record, but oci_email_dkim provides one ...
+    domain = replace(oci_email_dkim.this.dns_subdomain_name, "/\\.$/", "")
     rtype  = "CNAME"
-    rdata  = oci_email_dkim.this.cname_record_value
+    # whereas oci_email_dkim does not provide one here but OCI DNS expects one (the resource creation will
+    # succeed with no period but it will register as drift on every subsequent apply)
+    rdata  = "${oci_email_dkim.this.cname_record_value}."
     ttl    = 300
   }
 }
@@ -64,4 +67,23 @@ resource "oci_dns_rrset" "spf" {
     rdata  = "\"v=spf1 include:rp.oracleemaildelivery.com include:ap.rp.oracleemaildelivery.com include:eu.rp.oracleemaildelivery.com ~all\""
     ttl    = 300
   }
+}
+
+resource "oci_identity_policy" "this" {
+  for_each = var.allow_users_to_update_records
+
+  compartment_id = var.compartment_id
+
+  name           = "dns-update-${each.key}"
+  description    = "allow ocidns group to manage ${var.name}"
+
+  statements = concat(
+    [
+      "Allow group ${each.key} to read dns-zones in compartment id ${var.compartment_id}",
+      "Allow group ${each.key} to read dns-zones in compartment id ${var.compartment_id} where target.dns-zone.name = '${var.name}'"
+    ],
+    [
+      for record in each.value: "Allow group ${each.key} to use dns-records in compartment id ${var.compartment_id} where all { target.dns-domain.name = '${record}.${var.name}' }"
+    ]
+  )
 }
