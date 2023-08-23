@@ -134,7 +134,14 @@ inputs = {
   compartment_id = local.env_vars.locals.compartment_id
   name           = local.env_vars.locals.environment
   cidr_block     = local.vcn_cidr
-  subnets        = {
+
+  bastion_enabled      = true
+  bastion_cidr_allowed = [
+    # Harlan Barnes <harlan.barnes@invicara.com>
+    "73.7.139.22/32"
+  ]
+
+  subnets         = {
 
     public1 = {
       description = "Public subnet for ${local.env_vars.locals.environment}"

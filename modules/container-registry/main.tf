@@ -8,6 +8,34 @@ terraform {
 
 locals {}
 
+resource "oci_identity_policy" "readonly" {
+  count = length(var.access_groups.readonly) == 0 ? 0 : 1
+
+  compartment_id = var.compartment_id
+
+  name           = "ocir-readonly-${var.env_name}"
+  description    = "allow group to pull images"
+
+  statements = [
+    for group in var.access_groups.readonly:
+      "Allow group ${group} to read repos in in compartment id ${var.compartment_id}"
+  ]
+}
+
+resource "oci_identity_policy" "readwrite" {
+  count = length(var.access_groups.readwrite) == 0 ? 0 : 1
+
+  compartment_id = var.compartment_id
+
+  name           = "ocir-readwrite-${var.env_name}"
+  description    = "allow group to pull images"
+
+  statements = [
+    for group in var.access_groups.readwrite:
+      "Allow group ${group} to manage repos in in compartment id ${var.compartment_id}"
+  ]
+}
+
 resource "oci_artifacts_container_repository" "this" {
   for_each = {
     for o in var.repositories : o.name => o

@@ -12,6 +12,7 @@ include "root" {
 
 inputs = {
   compartment_id = local.env_vars.locals.compartment_id
+  env_name       = local.env_vars.locals.environment
 
   repositories = [
     ### Images Hosted at DockerHub - These are replicated because of docker.io service limits
