@@ -79,11 +79,11 @@ resource "oci_identity_policy" "this" {
 
   statements = concat(
     [
-      "Allow group ${each.key} to read dns-zones in compartment id ${var.compartment_id}",
-      "Allow group ${each.key} to read dns-zones in compartment id ${var.compartment_id} where target.dns-zone.name = '${var.name}'"
+      "Allow group ${each.key} to read dns-zones in compartment ${var.compartment_name}",
+      "Allow group ${each.key} to read dns-zones in compartment ${var.compartment_name} where target.dns-zone.name = '${var.name}'"
     ],
     [
-      for record in each.value: "Allow group ${each.key} to use dns-records in compartment id ${var.compartment_id} where all { target.dns-domain.name = '${record}.${var.name}' }"
+      for record in each.value: "Allow group ${each.key} to use dns-records in compartment ${var.compartment_name} where all { target.dns-domain.name = '${record}.${var.name}' }"
     ]
   )
 }

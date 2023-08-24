@@ -14,6 +14,11 @@ variable "compartment_id" {
   type        = string
 }
 
+variable "compartment_name" {
+  description = "The compartment name for the zone"
+  type        = string
+}
+
 variable "allow_users_to_update_records" {
   description = "Users and records map"
   type        = map(list(string))

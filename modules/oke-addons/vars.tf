@@ -8,6 +8,11 @@ variable "compartment_id" {
   type        = string
 }
 
+variable "compartment_name" {
+  description = "The compartment name for the zone"
+  type        = string
+}
+
 variable "vcn_id" {
   description = "The id of the VCN"
   type        = string

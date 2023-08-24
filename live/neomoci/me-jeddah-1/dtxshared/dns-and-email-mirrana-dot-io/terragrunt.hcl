@@ -11,6 +11,7 @@ include "root" {
 }
 
 inputs = {
-  compartment_id = local.env_vars.locals.compartment_id
-  name           = "mirrana.io"
+  compartment_id   = local.env_vars.locals.compartment_id
+  compartment_name = local.env_vars.locals.compartment_name
+  name             = "mirrana.io"
 }
