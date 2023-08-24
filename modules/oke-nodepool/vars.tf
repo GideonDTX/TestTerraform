@@ -67,7 +67,7 @@ variable "disk" {
 }
 
 variable "ssh_public_key" {
-  description = "Node network security group id"
+  description = "SSH public key"
   type        = string
 }
 

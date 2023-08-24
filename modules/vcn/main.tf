@@ -12,6 +12,12 @@ terraform {
 locals {
   # networks
   anywhere = "0.0.0.0/0"
+
+  # protocol
+  icmp     = "1"
+  tcp      = "6"
+  udp      = "17"
+  anyproto = "all"
 }
 
 # data sources
@@ -21,6 +27,10 @@ data "oci_core_services" "this" {
     values = ["All .* Services In Oracle Services Network"]
     regex  = true
   }
+}
+
+data "oci_identity_availability_domains" "this" {
+  compartment_id = var.compartment_id
 }
 
 ## core
@@ -94,6 +104,95 @@ resource "oci_kms_key" "this" {
   }
 }
 
+## Compute Instance (as bastion host ... not using bastion service)
+resource "oci_core_network_security_group" "bastion" {
+  display_name   = "${var.name}-bastion"
+  compartment_id = var.compartment_id
+  vcn_id         = oci_core_vcn.this.id
+}
+
+resource "oci_core_network_security_group_security_rule" "bastion_ingress_ssh" {
+  for_each = var.bastion_permit_cidr
+
+  description               = "Incoming ssh from ${each.key}"
+  network_security_group_id = oci_core_network_security_group.bastion.id
+  direction                 = "INGRESS"
+  source                    = each.value
+  source_type               = "CIDR_BLOCK"
+  protocol                  = local.tcp
+
+  tcp_options {
+    destination_port_range {
+      min = 22
+      max = 22
+    }
+  }
+}
+
+# egress to anything on https
+resource "oci_core_network_security_group_security_rule" "bastion_egress_https" {
+  network_security_group_id = oci_core_network_security_group.bastion.id
+  direction                 = "EGRESS"
+  destination               = local.anywhere
+  destination_type          = "CIDR_BLOCK"
+  protocol                  = local.tcp
+
+  tcp_options {
+    destination_port_range {
+      min = 443
+      max = 443
+    }
+  }
+}
+
+# egress to anything in VCN
+resource "oci_core_network_security_group_security_rule" "bastion_egress_in_VCN" {
+  network_security_group_id = oci_core_network_security_group.bastion.id
+  direction                 = "EGRESS"
+  destination               = var.cidr_block
+  destination_type          = "CIDR_BLOCK"
+  protocol                  = local.anyproto
+}
+
+resource "tls_private_key" "bastion" {
+  count = var.bastion_enabled ? 1 : 0
+
+  algorithm = "ED25519"
+}
+
+resource "oci_core_instance" "bastion" {
+  count = var.bastion_enabled ? 1 : 0
+
+  availability_domain = data.oci_identity_availability_domains.this.availability_domains[0].name
+  compartment_id      = var.compartment_id
+  shape               = "VM.Standard3.Flex"
+  display_name        = "${var.name}-bastion"
+
+  source_details {
+    source_id               = var.bastion_image_id
+    source_type             = "image"
+    boot_volume_size_in_gbs = 50
+  }
+
+  shape_config {
+    ocpus         = 1.0
+    memory_in_gbs = 2.0
+  }
+
+  create_vnic_details {
+    hostname_label   = "${var.name}-bastion"
+    subnet_id        = oci_core_subnet.this["public1"].id
+    assign_public_ip = true
+    nsg_ids          = [
+      oci_core_network_security_group.bastion.id
+    ]
+  }
+
+  metadata = {
+    ssh_authorized_keys = tls_private_key.bastion[0].public_key_openssh
+  }
+}
+
 ## Subnets
 
 resource "oci_core_subnet" "this" {
@@ -106,10 +205,12 @@ resource "oci_core_subnet" "this" {
   cidr_block     = each.value.cidr_block
   display_name   = each.value.description
 
-  prohibit_public_ip_on_vnic = each.value.type == "public" ? true : false
+  prohibit_public_ip_on_vnic = each.value.type == "public" ? false : true
 
   route_table_id    = oci_core_route_table.this[each.key].id
-  security_list_ids = [oci_core_security_list.this[each.key].id]
+  security_list_ids = [
+      oci_core_security_list.this[each.key].id
+    ]
 
   freeform_tags = {
     name = each.key

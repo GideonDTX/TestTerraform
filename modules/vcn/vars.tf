@@ -13,6 +13,24 @@ variable "cidr_block" {
   type        = string
 }
 
+variable "bastion_enabled" {
+  description = "Create a compute instance for bastion access"
+  type        = bool
+  default     = false
+}
+
+variable "bastion_permit_cidr" {
+  description = "Allow these CIDRs to access the bastion over ssh"
+  type        = map(string)
+  default     = {}
+}
+
+variable "bastion_image_id" {
+  description = "The image id for the bastion host"
+  type        = string
+  default     = ""
+}
+
 variable "subnets" {
   description = "Subnets, route tables, and network security lists (do not include default routes for internet, nat, and services)"
   type        = map(object({

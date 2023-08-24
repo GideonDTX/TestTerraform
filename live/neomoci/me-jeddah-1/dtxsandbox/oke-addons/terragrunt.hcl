@@ -1,5 +1,6 @@
 locals {
-  region_vars  = read_terragrunt_config(find_in_parent_folders("region.hcl"))
+  region_vars = read_terragrunt_config(find_in_parent_folders("region.hcl"))
+  env_vars    = read_terragrunt_config(find_in_parent_folders("env.hcl"))
 }
 
 terraform {
@@ -48,10 +49,11 @@ dependencies {
 }
 
 inputs = {
-  region         = local.region_vars.locals.region
-  compartment_id = dependency.vcn.outputs.compartment_id
-  vcn_id         = dependency.vcn.outputs.id
-  oke_name       = dependency.cluster.outputs.name
-  workers_nsg_id = dependency.cluster.outputs.network_security_groups["workers"].id
-  data_subnet_id = dependency.vcn.outputs.subnets["data1"].id
+  region           = local.region_vars.locals.region
+  compartment_id   = local.env_vars.locals.compartment_id
+  compartment_name = local.env_vars.locals.compartment_name
+  vcn_id           = dependency.vcn.outputs.id
+  oke_name         = dependency.cluster.outputs.name
+  workers_nsg_id   = dependency.cluster.outputs.network_security_groups["workers"].id
+  data_subnet_id   = dependency.vcn.outputs.subnets["data1"].id
 }

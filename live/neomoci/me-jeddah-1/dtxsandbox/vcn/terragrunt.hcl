@@ -1,6 +1,41 @@
 locals {
   env_vars     = read_terragrunt_config(find_in_parent_folders("env.hcl"))
 
+  # enable bastion (for emergencies, vpn outages, etc.)
+  bastion_enabled     = true
+  bastion_permit_cidr = {
+    Harlan_Barnes = "73.7.139.22/32"
+  }
+  bastion_private_ports = {
+    kubernetes_api = 6443
+  }
+  # Oracle Automous Linux 8.8
+  bastion_image_id = "ocid1.image.oc1.me-jeddah-1.aaaaaaaaueynum7iew5v7huc5ji6fgjmpi2tugcrlgcnrdrzqtwwwwy2b25a"
+  bastion_public = [
+    for name, cidr in local.bastion_permit_cidr : {
+      description = "Allow incoming ssh from ${name}"
+      direction   = "ingress"
+      source      = cidr
+      protocol    = local.tcp
+      tcp_options = {
+        min = 22
+        max = 22
+      }
+    }
+  ]
+  bastion_private = [
+    for name, port in local.bastion_private_ports : {
+      description = "Allow incoming ${name} from public subnet for bastion"
+      direction   = "ingress"
+      source      = local.public1_cidr
+      protocol    = local.tcp
+      tcp_options = {
+        min = port
+        max = port
+      }
+    }
+  ]
+
   # cidr blocks
   vcn_cidr          = "10.149.96.0/25"
   public1_cidr      = "10.149.96.64/27"
@@ -135,11 +170,9 @@ inputs = {
   name           = local.env_vars.locals.environment
   cidr_block     = local.vcn_cidr
 
-  bastion_enabled      = true
-  bastion_cidr_allowed = [
-    # Harlan Barnes <harlan.barnes@invicara.com>
-    "73.7.139.22/32"
-  ]
+  bastion_enabled     = local.bastion_enabled
+  bastion_permit_cidr = local.bastion_permit_cidr
+  bastion_image_id    = local.bastion_image_id
 
   subnets         = {
 
@@ -200,7 +233,7 @@ inputs = {
           }
         },
       ],
-      local.ingress_icmp, local.egress_icmp)
+      local.ingress_icmp, local.egress_icmp, local.bastion_public)
     }
 
     application1 = {
@@ -326,7 +359,7 @@ inputs = {
           }
         },
       ],
-      local.ingress_icmp, local.egress_icmp)
+      local.ingress_icmp, local.egress_icmp, local.bastion_private)
     }
 
     data1 = {
@@ -450,7 +483,7 @@ inputs = {
           }
         },
       ],
-      local.ingress_icmp, local.egress_icmp)
+      local.ingress_icmp, local.egress_icmp, local.bastion_private)
     }
   }
 }

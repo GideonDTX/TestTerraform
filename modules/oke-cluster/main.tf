@@ -235,6 +235,23 @@ resource "oci_core_network_security_group_security_rule" "api_ingress_6443" {
   }
 }
 
+resource "oci_core_network_security_group_security_rule" "api_ingress_bastion_6443" {
+  description = "allow workers to communicate with api on 6443"
+
+  network_security_group_id = oci_core_network_security_group.api.id
+  direction                 = "INGRESS"
+  source                    = var.bastion_nsg_id
+  source_type               = "NETWORK_SECURITY_GROUP"
+  protocol                  = local.tcp
+
+  tcp_options {
+    destination_port_range {
+      min = 6443
+      max = 6443
+    }
+  }
+}
+
 resource "oci_core_network_security_group_security_rule" "api_ingress_12250" {
   description = "allow workers to communicate with api on 12250"
 

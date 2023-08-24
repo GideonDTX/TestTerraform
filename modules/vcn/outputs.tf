@@ -18,6 +18,23 @@ output "kms_id" {
   value = oci_kms_key.this.id
 }
 
+output "bastion_public_ip" {
+  value = var.bastion_enabled ? oci_core_instance.bastion[0].public_ip : ""
+}
+
+output "bastion_ssh_private_key" {
+  value     = var.bastion_enabled ? tls_private_key.bastion[0].private_key_openssh : ""
+  sensitive = true
+}
+
+output "bastion_ssh_public_key" {
+  value = var.bastion_enabled ? tls_private_key.bastion[0].public_key_openssh : ""
+}
+
+output "bastion_nsg_id" {
+  value = oci_core_network_security_group.bastion.id
+}
+
 output "subnets" {
   value = {
     for name, subnet in oci_core_subnet.this :

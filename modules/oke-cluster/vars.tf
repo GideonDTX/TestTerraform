@@ -27,3 +27,8 @@ variable "kubernetes_version" {
   description = "The Kubernetes version"
   type        = string
 }
+
+variable "bastion_nsg_id" {
+  description = "The bastion host's network "
+  type        = string
+}
