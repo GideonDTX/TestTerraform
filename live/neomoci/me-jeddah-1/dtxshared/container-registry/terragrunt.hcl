@@ -11,8 +11,15 @@ include "root" {
 }
 
 inputs = {
-  compartment_id = local.env_vars.locals.compartment_id
-  env_name       = local.env_vars.locals.environment
+  compartment_id   = local.env_vars.locals.compartment_id
+  compartment_name = local.env_vars.locals.compartment_name
+  env_name         = local.env_vars.locals.environment
+  access_groups  = {
+    readonly = [
+      "TONOMUS_DTX_PaaS-Dev_Read",
+      "TONOMUS_DTX_PaaS-Dev_Read_Group",
+    ]
+  }
 
   repositories = [
     ### Images Hosted at DockerHub - These are replicated because of docker.io service limits

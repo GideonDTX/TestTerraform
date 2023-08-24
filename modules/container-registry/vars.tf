@@ -1,10 +1,15 @@
 variable "compartment_id" {
-  description = "The compartment id for all resources"
+  description = "The compartment id"
+  type        = string
+}
+
+variable "compartment_name" {
+  description = "The compartment name"
   type        = string
 }
 
 variable "env_name" {
-  description = "The environment name id for all resources"
+  description = "The environment name"
   type        = string
 }
 

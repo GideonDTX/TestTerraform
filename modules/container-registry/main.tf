@@ -18,7 +18,7 @@ resource "oci_identity_policy" "readonly" {
 
   statements = [
     for group in var.access_groups.readonly:
-      "Allow group ${group} to read repos in in compartment id ${var.compartment_id}"
+      "Allow group ${group} to read repos in compartment ${var.compartment_name}"
   ]
 }
 
@@ -32,7 +32,7 @@ resource "oci_identity_policy" "readwrite" {
 
   statements = [
     for group in var.access_groups.readwrite:
-      "Allow group ${group} to manage repos in in compartment id ${var.compartment_id}"
+      "Allow group ${group} to manage repos in compartment ${var.compartment_name}"
   ]
 }
 
