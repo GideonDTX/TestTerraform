@@ -18,8 +18,10 @@ locals {
   #       oci ce node-pool-options get --node-pool-option-id all
   #
 
-  # id for Oracle-Linux-8.8-2023.07.31-1
-  image_id  = "ocid1.image.oc1.me-jeddah-1.aaaaaaaad3z5leekuycivssr4mkuzeawm4nlfmgvy5yjnjfqipher7bkbcva"
+  # ID for Oracle-Linux-8.8-2023.06.30-0-OKE-1.26.2-632
+  # NOTE: OKE images boot up faster because they already have the kube components installed
+  #       As such, choose an image that matches your kubernetes version
+  image_id  = "ocid1.image.oc1.me-jeddah-1.aaaaaaaav2eia7qmlzxb2a2gxgxwq5dcazd66cfpnl2pqus4rxkbzxc2ohhq"
 
   # note cpu/memory values must be valid ratios (check documentation)
   cpu    = 1
