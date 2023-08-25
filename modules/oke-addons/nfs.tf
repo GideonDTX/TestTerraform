@@ -21,7 +21,7 @@ locals {
 resource "oci_core_network_security_group" "fss" {
   compartment_id = var.compartment_id
   vcn_id         = var.vcn_id
-  display_name   = "${var.oke_name}-oke-fss"
+  display_name   = "${var.cluster_name}-oke-fss"
 }
 
 # all icmp within the vcn is allowed
@@ -112,7 +112,7 @@ resource "oci_core_network_security_group_security_rule" "fss_egress_rule_nfs_ud
 }
 
 resource "oci_file_storage_mount_target" "this" {
-  display_name        = "${var.oke_name}-oke"
+  display_name        = "${var.cluster_name}-oke"
   compartment_id      = var.compartment_id
   availability_domain = data.oci_identity_availability_domains.this.availability_domains[0].name
   subnet_id           = var.data_subnet_id
@@ -123,7 +123,7 @@ resource "oci_file_storage_mount_target" "this" {
 }
 
 resource "oci_file_storage_export_set" "this" {
-  display_name    = "${var.oke_name}-oke"
+  display_name    = "${var.cluster_name}-oke"
   mount_target_id = oci_file_storage_mount_target.this.id
 }
 

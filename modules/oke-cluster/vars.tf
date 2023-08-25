@@ -3,6 +3,11 @@ variable "name" {
   type        = string
 }
 
+variable "region_name" {
+  description = "The region name for OCIR"
+  type        = string
+}
+
 variable "vcn_id" {
   description = "The id of the vcn"
   type        = string
@@ -30,5 +35,10 @@ variable "kubernetes_version" {
 
 variable "bastion_nsg_id" {
   description = "The bastion host's network "
+  type        = string
+}
+
+variable "service_id_secret" {
+  description = "secret data for service id"
   type        = string
 }

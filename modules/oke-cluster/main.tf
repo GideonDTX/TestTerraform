@@ -3,8 +3,14 @@ terraform {
     oci = {
       source  = "oracle/oci"
     }
+
     tls = {
       source  = "hashicorp/tls"
+    }
+
+    # need this for image-pull
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
     }
   }
 }

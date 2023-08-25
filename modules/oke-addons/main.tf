@@ -22,11 +22,6 @@ terraform {
   }
 }
 
-# os namespace
-data "oci_objectstorage_namespace" "this" {
-  compartment_id = var.compartment_id
-}
-
 # ad
 data "oci_identity_availability_domains" "this" {
   compartment_id = var.compartment_id
@@ -37,23 +32,16 @@ data "oci_core_vcn" "this" {
   vcn_id = var.vcn_id
 }
 
-# oke
-data "oci_containerengine_clusters" "this" {
-  name           = var.oke_name
-  compartment_id = var.compartment_id
-  state          = ["ACTIVE"]
-}
-
 # nodepools
 data "oci_containerengine_node_pools" "this" {
   compartment_id = var.compartment_id
-  cluster_id     = data.oci_containerengine_clusters.this.clusters[0].id
+  cluster_id     = var.cluster_id
   state          = ["ACTIVE", "UPDATING"]
 }
 
 # kubeconf
 data "oci_containerengine_cluster_kube_config" "this" {
-  cluster_id = data.oci_containerengine_clusters.this.clusters[0].id
+  cluster_id = var.cluster_id
 }
 
 provider "kubernetes" {

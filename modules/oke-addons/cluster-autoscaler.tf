@@ -9,17 +9,17 @@ locals {
 }
 
 resource "oci_identity_policy" "autoscaler-manage-node-pools" {
-  name           = "${var.oke_name}-autoscaler-manage-node-pools"
+  name           = "${var.cluster_name}-autoscaler-manage-node-pools"
   description    = "allow autoscaler instances to manage node pools"
   compartment_id = var.compartment_id
 
   statements = [
-    "Allow dynamic-group ${var.oke_name}-oke-workers to manage cluster-node-pools in compartment ${var.compartment_name}",
-    "Allow dynamic-group ${var.oke_name}-oke-workers to manage instance-family in compartment ${var.compartment_name}",
-    "Allow dynamic-group ${var.oke_name}-oke-workers to use subnets in compartment ${var.compartment_name}",
-    "Allow dynamic-group ${var.oke_name}-oke-workers to read virtual-network-family in compartment ${var.compartment_name}",
-    "Allow dynamic-group ${var.oke_name}-oke-workers to use vnics in compartment ${var.compartment_name}",
-    "Allow dynamic-group ${var.oke_name}-oke-workers to inspect compartments in compartment ${var.compartment_name}",
+    "Allow dynamic-group ${var.cluster_name}-oke-workers to manage cluster-node-pools in compartment ${var.compartment_name}",
+    "Allow dynamic-group ${var.cluster_name}-oke-workers to manage instance-family in compartment ${var.compartment_name}",
+    "Allow dynamic-group ${var.cluster_name}-oke-workers to use subnets in compartment ${var.compartment_name}",
+    "Allow dynamic-group ${var.cluster_name}-oke-workers to read virtual-network-family in compartment ${var.compartment_name}",
+    "Allow dynamic-group ${var.cluster_name}-oke-workers to use vnics in compartment ${var.compartment_name}",
+    "Allow dynamic-group ${var.cluster_name}-oke-workers to inspect compartments in compartment ${var.compartment_name}",
   ]
 }
 

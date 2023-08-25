@@ -93,7 +93,7 @@ resource "kubernetes_deployment" "external-dns" {
             "--provider=oci",
             "--policy=upsert-only",
             "--interval=90s",
-            "--txt-owner-id=${var.oke_name}-ext-dns",
+            "--txt-owner-id=${var.cluster_name}-ext-dns",
             "--oci-auth-instance-principal"
           ]
         }

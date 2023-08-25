@@ -33,6 +33,9 @@ inputs = {
       name = "dtx/calico/apiserver",
     },
     {
+      name = "dtx/calico/cni",
+    },
+    {
       name = "dtx/calico/csi",
     },
     {

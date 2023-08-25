@@ -18,7 +18,12 @@ variable "vcn_id" {
   type        = string
 }
 
-variable "oke_name" {
+variable "cluster_id" {
+  description = "The id of the OKE cluster"
+  type        = string
+}
+
+variable "cluster_name" {
   description = "The name of the OKE cluster"
   type        = string
 }

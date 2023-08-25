@@ -43,6 +43,7 @@ dependencies {
   paths = [
     "../vcn",
     "../oke-cluster",
+    "../oke-calico",
     # for cluster autscaler to run
     "../oke-np-sys1"
   ]
@@ -50,10 +51,11 @@ dependencies {
 
 inputs = {
   region           = local.region_vars.locals.region
-  compartment_id   = local.env_vars.locals.compartment_id
+  compartment_id   = dependency.vcn.outputs.compartment_id
   compartment_name = local.env_vars.locals.compartment_name
   vcn_id           = dependency.vcn.outputs.id
-  oke_name         = dependency.cluster.outputs.name
+  cluster_id       = dependency.cluster.outputs.id
+  cluster_name     = dependency.cluster.outputs.name
   workers_nsg_id   = dependency.cluster.outputs.network_security_groups["workers"].id
   data_subnet_id   = dependency.vcn.outputs.subnets["data1"].id
 }
