@@ -1,3 +1,16 @@
+resource "oci_core_public_ip" "ingress-nginx" {
+  # needed because of this bug: https://github.com/oracle/terraform-provider-oci/issues/1479
+  lifecycle {
+    ignore_changes = [
+      private_ip_id
+    ]
+  }
+
+  compartment_id = var.compartment_id
+  display_name   = "${var.cluster_name}-ingress-nginx-loadbalancer-ip"
+  lifetime       = "RESERVED"
+}
+
 resource "helm_release" "ingress-nginx" {
   name       = "ingress-nginx"
   namespace  = "kube-system"
@@ -14,6 +27,50 @@ resource "helm_release" "ingress-nginx" {
   set {
     name  = "controller.autoscaling.minReplicas"
     value = "2"
+  }
+
+  # set public ip
+  set {
+    name = "controller.service.loadBalancerIP"
+    value = oci_core_public_ip.ingress-nginx.ip_address
+  }
+
+  # OCI specific - set nsg ourselves
+
+  set {
+    name  = "controller.service.annotations.oci-network-load-balancer\\.oraclecloud\\.com/security-list-management-mode"
+    value = "None"
+  }
+
+  # OCI specific - set nsg
+  set {
+    name  = "controller.service.annotations.oci\\.oraclecloud\\.com/oci-network-security-groups"
+    value = var.loadbalancers_nsg_id
+  }
+
+  # From here: https://kubernetes.github.io/ingress-nginx/deploy/
+  #
+  #   "If the load balancers of your cloud provider do active healthchecks on their backends (most do),
+  #    you can change the externalTrafficPolicy of the ingress controller Service to Local (instead of
+  #    the default Cluster) to save an extra hop in some cases."
+  #
+  set {
+    name  = "controller.service.externalTrafficPolicy"
+    value = "Local"
+  }
+
+  # From here: https://kubernetes.github.io/ingress-nginx/
+  #
+  #   "If a single instance of the Ingress-NGINX controller is the sole Ingress controller running in
+  #    your cluster, you should add the annotation "ingressclass.kubernetes.io/is-default-class" in your
+  #    IngressClass, so any new Ingress objects will have this one as default IngressClass.
+  #
+  #    When using Helm, you can enable this annotation by setting `controller.ingressClassResource.default: true`
+  #    in your Helm chart installation's values file.
+  #
+  set {
+    name  = "controller.ingressClassResource.default"
+    value = "true"
   }
 
   # force ssl

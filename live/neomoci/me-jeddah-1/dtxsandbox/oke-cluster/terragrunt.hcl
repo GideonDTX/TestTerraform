@@ -50,6 +50,5 @@ inputs = {
   private_subnet_id  = dependency.vcn.outputs.subnets["application1"].id
   kubernetes_version = local.kubernetes_version
   bastion_nsg_id     = dependency.vcn.outputs.bastion_nsg_id
-  # image_pull_user    = local.env_vars.locals.service_id_secret
-  service_id_secret  = "serviceid_harlan_dot_barnes_at_invicara_dot_com"
+  service_id_secret  = local.env_vars.locals.service_id_secret
 }

@@ -1,7 +1,7 @@
 locals {
   env_vars     = read_terragrunt_config(find_in_parent_folders("env.hcl"))
 
-  # enable bastion (for emergencies, vpn outages, etc.)
+  # enable bastion only when needed (for emergencies, vpn outages, etc.)
   bastion_enabled     = true
   bastion_permit_cidr = {
     Harlan_Barnes = "73.7.139.22/32"

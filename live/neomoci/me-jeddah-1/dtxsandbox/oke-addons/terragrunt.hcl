@@ -50,12 +50,14 @@ dependencies {
 }
 
 inputs = {
-  region           = local.region_vars.locals.region
-  compartment_id   = dependency.vcn.outputs.compartment_id
-  compartment_name = local.env_vars.locals.compartment_name
-  vcn_id           = dependency.vcn.outputs.id
-  cluster_id       = dependency.cluster.outputs.id
-  cluster_name     = dependency.cluster.outputs.name
-  workers_nsg_id   = dependency.cluster.outputs.network_security_groups["workers"].id
-  data_subnet_id   = dependency.vcn.outputs.subnets["data1"].id
+  region               = local.region_vars.locals.region
+  compartment_id       = dependency.vcn.outputs.compartment_id
+  compartment_name     = local.env_vars.locals.compartment_name
+  vcn_id               = dependency.vcn.outputs.id
+  cluster_id           = dependency.cluster.outputs.id
+  cluster_name         = dependency.cluster.outputs.name
+  workers_nsg_id       = dependency.cluster.outputs.network_security_groups["workers"].id
+  loadbalancers_nsg_id = dependency.cluster.outputs.network_security_groups["loadbalancers"].id
+  data_subnet_id       = dependency.vcn.outputs.subnets["data1"].id
+  service_id_secret    = local.env_vars.locals.service_id_secret
 }

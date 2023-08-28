@@ -61,9 +61,7 @@ provider "kubectl" {
 data "kubectl_path_documents" "this" {
   pattern = "${path.module}/templates/calico-${var.calico_version}.yaml"
   vars = {
-    region    = var.region
-    namespace = data.oci_objectstorage_namespace.this.namespace
-    version   = var.calico_version
+    image_registry = "${var.region}.ocir.io/${data.oci_objectstorage_namespace.this.namespace}/dtx"
   }
 }
 

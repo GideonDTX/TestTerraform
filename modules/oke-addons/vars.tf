@@ -33,7 +33,16 @@ variable "workers_nsg_id" {
   type        = string
 }
 
+variable "loadbalancers_nsg_id" {
+  description = "Load balancers security group id"
+  type        = string
+}
+
 variable "data_subnet_id" {
   description = "Subnet id to place the NFS mount targets"
+  type        = string
+}
+variable "service_id_secret" {
+  description = "secret data for service id"
   type        = string
 }

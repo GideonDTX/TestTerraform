@@ -2,7 +2,7 @@ locals {
   region_vars = read_terragrunt_config(find_in_parent_folders("region.hcl"))
   env_vars    = read_terragrunt_config(find_in_parent_folders("env.hcl"))
 
-  calico_version = "v3.26.1"
+  calico_version = "v3.25.1"
 }
 
 terraform {
@@ -36,7 +36,6 @@ dependency "cluster" {
 dependencies {
   paths = [
     "../oke-cluster",
-    "../oke-np-sys1",
   ]
 }
 
