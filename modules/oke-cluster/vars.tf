@@ -42,3 +42,13 @@ variable "service_id_secret" {
   description = "secret data for service id"
   type        = string
 }
+
+variable "neom_vpn_cidr" {
+  description = "NEOM older VPN CIDR"
+  type        = string
+}
+
+variable "neom_cisco_vpn_cidr" {
+  description = "NEOM newer VPN CIDR"
+  type        = string
+}

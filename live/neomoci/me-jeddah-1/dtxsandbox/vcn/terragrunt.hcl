@@ -1,5 +1,12 @@
 locals {
-  env_vars     = read_terragrunt_config(find_in_parent_folders("env.hcl"))
+  region_vars = read_terragrunt_config(find_in_parent_folders("region.hcl"))
+  env_vars    = read_terragrunt_config(find_in_parent_folders("env.hcl"))
+
+  # cidr blocks
+  vcn_cidr          = "10.149.96.0/25"
+  public1_cidr      = "10.149.96.64/27"
+  application1_cidr = "10.149.96.0/26"
+  data1_cidr        = "10.149.96.96/27"
 
   # enable bastion only when needed (for emergencies, vpn outages, etc.)
   bastion_enabled     = true
@@ -35,12 +42,6 @@ locals {
       }
     }
   ]
-
-  # cidr blocks
-  vcn_cidr          = "10.149.96.0/25"
-  public1_cidr      = "10.149.96.64/27"
-  application1_cidr = "10.149.96.0/26"
-  data1_cidr        = "10.149.96.96/27"
 
   # network labels
   anywhere = "0.0.0.0/0"
@@ -175,13 +176,21 @@ inputs = {
   bastion_image_id    = local.bastion_image_id
 
   subnets         = {
-
     public1 = {
       description = "Public subnet for ${local.env_vars.locals.environment}"
       type        = "public"
       tier        = "public"
       cidr_block  = local.public1_cidr
       dns_label   = "pub1"
+
+      route_table_rules = [
+        {
+          description       = "Public subnets default route to internet gateway"
+          destination       = "0.0.0.0/0"
+          destination_type  = "CIDR_BLOCK"
+          network_entity_id = "INTERNET_GATEWAY"
+        }
+      ]
 
       network_security_list_rules = concat([
         # ingress rules
@@ -243,7 +252,56 @@ inputs = {
       cidr_block  = local.application1_cidr
       dns_label   = "app1"
 
+      route_table_rules = [
+        {
+          description       = "Private subnets default route to NAT gateway"
+          destination       = "0.0.0.0/0"
+          destination_type  = "CIDR_BLOCK"
+          network_entity_id = "NAT_GATEWAY"
+        },
+        {
+          description       = "CISCO_VPN"
+          destination       = local.region_vars.locals.neom_cisco_vpn_cidr
+          destination_type  = "CIDR_BLOCK"
+          network_entity_id = local.region_vars.locals.neom_vpn_drg_id
+        },
+        {
+          description       = "VPN"
+          destination       = local.region_vars.locals.neom_vpn_cidr
+          destination_type  = "CIDR_BLOCK"
+          network_entity_id = local.region_vars.locals.neom_vpn_drg_id
+        },
+        {
+          description       = "All subnets route Oracle services through service gateway"
+          destination       = "SERVICE_CIDR_BLOCK"
+          destination_type  = "SERVICE_CIDR_BLOCK"
+          network_entity_id = "SERVICE_GATEWAY"
+        },
+      ]
+
       network_security_list_rules = concat([
+        # ingress rules - neom vpn
+        {
+          description = "Allow incoming from older neom vpn to k8s api"
+          direction   = "ingress"
+          source      = local.region_vars.locals.neom_vpn_cidr
+          protocol    = local.tcp
+          tcp_options = {
+            min = 6443
+            max = 6443
+          }
+        },
+        # ingress rules - neom cisco vpn
+        {
+          description = "Allow incoming from neom cisco vpn to k8s api"
+          direction   = "ingress"
+          source      = local.region_vars.locals.neom_cisco_vpn_cidr
+          protocol    = local.tcp
+          tcp_options = {
+            min = 6443
+            max = 6443
+          }
+        },
         # ingress rules
         {
           # incoming acccess from load balancer to worker nodes on application subnet
@@ -369,8 +427,103 @@ inputs = {
       cidr_block  = local.data1_cidr
       dns_label   = "data1"
 
+      route_table_rules = [
+        {
+          description       = "Private subnets default route to NAT gateway"
+          destination       = "0.0.0.0/0"
+          destination_type  = "CIDR_BLOCK"
+          network_entity_id = "NAT_GATEWAY"
+        },
+        # {
+        #   description       = "CISCO_VPN"
+        #   destination       = local.region_vars.locals.neom_cisco_vpn_cidr
+        #   destination_type  = "CIDR_BLOCK"
+        #   network_entity_id = local.region_vars.locals.neom_vpn_drg_id
+        # },
+        # {
+        #   description       = "VPN"
+        #   destination       = local.region_vars.locals.neom_vpn_cidr
+        #   destination_type  = "CIDR_BLOCK"
+        #   network_entity_id = local.region_vars.locals.neom_vpn_drg_id
+        # },
+        {
+          description       = "All subnets route Oracle services through service gateway"
+          destination       = "SERVICE_CIDR_BLOCK"
+          destination_type  = "SERVICE_CIDR_BLOCK"
+          network_entity_id = "SERVICE_GATEWAY"
+        },
+      ]
+
       network_security_list_rules = concat([
-        # ingress rules
+        # ingress rules - neom vpn
+        {
+          # incoming connections from older neom vpn subnet for postgres pgbouncer
+          description = "Allow incoming postgres pgbouncer from older neom vpn subnet"
+          direction   = "ingress"
+          source      = local.region_vars.locals.neom_vpn_cidr
+          protocol    = local.tcp
+          tcp_options = {
+            min = 6432
+            max = 6432
+          }
+        },
+        {
+          # incoming connections from older neom vpn subnet for redis
+          description = "Allow incoming redis from older neom vpn subnet"
+          direction   = "ingress"
+          source      = local.region_vars.locals.neom_vpn_cidr
+          protocol    = local.tcp
+          tcp_options = {
+            min = 6379
+            max = 6379
+          }
+        },
+        {
+          # incoming connections from older neom vpn subnet for mongodb
+          description = "Allow incoming mongodb from older neom vpn subnet"
+          direction   = "ingress"
+          source      = local.region_vars.locals.neom_vpn_cidr
+          protocol    = local.tcp
+          tcp_options = {
+            min = 27017
+            max = 27017
+          }
+        },
+        # ingress rules - neom cisco vpn
+        {
+          # incoming connections from neom cisco vpn subnet for postgres pgbouncer
+          description = "Allow incoming postgres pgbouncer from neom cisco vpn subnet"
+          direction   = "ingress"
+          source      = local.region_vars.locals.neom_cisco_vpn_cidr
+          protocol    = local.tcp
+          tcp_options = {
+            min = 6432
+            max = 6432
+          }
+        },
+        {
+          # incoming connections from neom cisco vpn subnet for redis
+          description = "Allow incoming redis from neom cisco vpn subnet"
+          direction   = "ingress"
+          source      = local.region_vars.locals.neom_cisco_vpn_cidr
+          protocol    = local.tcp
+          tcp_options = {
+            min = 6379
+            max = 6379
+          }
+        },
+        {
+          # incoming connections from neom cisco vpn subnet for mongodb
+          description = "Allow incoming mongodb from neom cisco vpn subnet"
+          direction   = "ingress"
+          source      = local.region_vars.locals.neom_cisco_vpn_cidr
+          protocol    = local.tcp
+          tcp_options = {
+            min = 27017
+            max = 27017
+          }
+        },
+        # ingress rules - internal
         {
           # incoming connections from application subnet for postgres pgbouncer
           description = "Allow incoming postgres pgbouncer from application subnet"

@@ -45,7 +45,6 @@ variable "subnets" {
       destination       = string
       destination_type  = string
       # only supports OCID of the network entity
-      # @todo - if/when DRG is attached add a convention/string to support drg route
       network_entity_id = string
     })), [])
     network_security_list_rules = optional(list(object({

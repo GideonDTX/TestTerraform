@@ -55,6 +55,7 @@ resource "oci_core_internet_gateway" "this" {
 # nat
 resource "oci_core_public_ip" "nat" {
   compartment_id = var.compartment_id
+  # display_name   = "${var.name}-nat-gw-ip"
   lifetime       = "RESERVED"
 }
 
@@ -229,48 +230,60 @@ resource "oci_core_route_table" "this" {
   vcn_id         = oci_core_vcn.this.id
   display_name   = "Route table for ${each.key}"
 
-  # default route rule for public subnets to the internet gateway
-  dynamic "route_rules" {
-    for_each = each.value.type == "public" ? [1] : []
+  # # default route rule for public subnets to the internet gateway
+  # dynamic "route_rules" {
+  #   for_each = each.value.type == "public" ? [1] : []
 
-    content {
-      description       = "Public subnets default route to internet gateway"
-      destination       = local.anywhere
-      network_entity_id = oci_core_internet_gateway.this.id
-    }
-  }
+  #   content {
+  #     description       = "Public subnets default route to internet gateway"
+  #     destination       = local.anywhere
+  #     network_entity_id = oci_core_internet_gateway.this.id
+  #   }
+  # }
 
-  # default route rule for private subnets to the nat gateway
-  dynamic "route_rules" {
-    for_each = each.value.type == "private" ? [1] : []
+  # # default route rule for private subnets to the nat gateway
+  # dynamic "route_rules" {
+  #   for_each = each.value.type == "private" ? [1] : []
 
-    content {
-      description       = "Private subnets default route to NAT gateway"
-      destination       = local.anywhere
-      network_entity_id = oci_core_nat_gateway.this.id
-    }
-  }
+  #   content {
+  #     description       = "Private subnets default route to NAT gateway"
+  #     destination       = local.anywhere
+  #     network_entity_id = oci_core_nat_gateway.this.id
+  #   }
+  # }
 
-  # Oracle service rule for private subnets to the service gateway (not allowed to on public subnets)
-  dynamic "route_rules" {
-    for_each = each.value.type == "private" ? [1] : []
+  # # Oracle service rule for private subnets to the service gateway (not allowed to on public subnets)
+  # dynamic "route_rules" {
+  #   for_each = each.value.type == "private" ? [1] : []
 
-    content {
-      description       = "All subnets route Oracle services through service gateway"
-      destination       = data.oci_core_services.this.services[0]["cidr_block"]
-      destination_type  = "SERVICE_CIDR_BLOCK"
-      network_entity_id = oci_core_service_gateway.this.id
-    }
-  }
+  #   content {
+  #     description       = "All subnets route Oracle services through service gateway"
+  #     destination       = data.oci_core_services.this.services[0]["cidr_block"]
+  #     destination_type  = "SERVICE_CIDR_BLOCK"
+  #     network_entity_id = oci_core_service_gateway.this.id
+  #   }
+  # }
 
   dynamic "route_rules" {
     for_each = { for index, obj in each.value.route_table_rules : index => obj }
 
     content {
-      description       = each.value.description
-      destination       = each.value.destination
-      destination_type  = each.value.destination_type
-      network_entity_id = each.value.network_entity_id
+      description       = route_rules.value.description
+      destination       = (
+        route_rules.value.destination == "SERVICE_CIDR_BLOCK" ?
+          data.oci_core_services.this.services[0]["cidr_block"] :
+          route_rules.value.destination
+      )
+      destination_type  = route_rules.value.destination_type
+      network_entity_id = (
+        route_rules.value.network_entity_id == "INTERNET_GATEWAY" ?
+          oci_core_internet_gateway.this.id :
+          route_rules.value.network_entity_id == "NAT_GATEWAY" ?
+            oci_core_nat_gateway.this.id :
+              route_rules.value.network_entity_id == "SERVICE_GATEWAY" ?
+                oci_core_service_gateway.this.id :
+                route_rules.value.network_entity_id
+      )
     }
   }
 }

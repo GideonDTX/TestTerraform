@@ -51,4 +51,7 @@ inputs = {
   kubernetes_version = local.kubernetes_version
   bastion_nsg_id     = dependency.vcn.outputs.bastion_nsg_id
   service_id_secret  = local.env_vars.locals.service_id_secret
+
+  neom_vpn_cidr       = local.region_vars.locals.neom_vpn_cidr
+  neom_cisco_vpn_cidr = local.region_vars.locals.neom_cisco_vpn_cidr
 }

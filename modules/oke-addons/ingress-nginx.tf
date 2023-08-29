@@ -1,6 +1,9 @@
 resource "oci_core_public_ip" "ingress-nginx" {
-  # needed because of this bug: https://github.com/oracle/terraform-provider-oci/issues/1479
   lifecycle {
+    # do not accidentally destroy public ip of load balancer
+    prevent_destroy = true
+
+    # needed because of this bug: https://github.com/oracle/terraform-provider-oci/issues/1479
     ignore_changes = [
       private_ip_id
     ]
@@ -38,12 +41,18 @@ resource "helm_release" "ingress-nginx" {
   # OCI specific - set nsg ourselves
 
   set {
-    name  = "controller.service.annotations.oci-network-load-balancer\\.oraclecloud\\.com/security-list-management-mode"
+    # NOTE: if you switch to network load balancers, use this annontation:
+    # name  = "controller.service.annotations.oci-network-load-balancer\\.oraclecloud\\.com/security-list-management-mode"
+    # this is for application load balancers
+    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/oci-load-balancer-security-list-management-mode"
     value = "None"
   }
 
   # OCI specific - set nsg
   set {
+    # NOTE: if you switch to network load balancers, use this annontation:
+    # name  = "controller.service.annotations.oci-network-load-balancer\\.oraclecloud\\.com/oci-network-security-groups"
+    # this is for application load balancers
     name  = "controller.service.annotations.oci\\.oraclecloud\\.com/oci-network-security-groups"
     value = var.loadbalancers_nsg_id
   }

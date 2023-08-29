@@ -42,6 +42,7 @@ variable "data_subnet_id" {
   description = "Subnet id to place the NFS mount targets"
   type        = string
 }
+
 variable "service_id_secret" {
   description = "secret data for service id"
   type        = string
