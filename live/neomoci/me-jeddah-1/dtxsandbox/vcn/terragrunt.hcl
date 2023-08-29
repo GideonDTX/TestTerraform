@@ -434,18 +434,18 @@ inputs = {
           destination_type  = "CIDR_BLOCK"
           network_entity_id = "NAT_GATEWAY"
         },
-        # {
-        #   description       = "CISCO_VPN"
-        #   destination       = local.region_vars.locals.neom_cisco_vpn_cidr
-        #   destination_type  = "CIDR_BLOCK"
-        #   network_entity_id = local.region_vars.locals.neom_vpn_drg_id
-        # },
-        # {
-        #   description       = "VPN"
-        #   destination       = local.region_vars.locals.neom_vpn_cidr
-        #   destination_type  = "CIDR_BLOCK"
-        #   network_entity_id = local.region_vars.locals.neom_vpn_drg_id
-        # },
+        {
+          description       = "C_VPN"
+          destination       = local.region_vars.locals.neom_cisco_vpn_cidr
+          destination_type  = "CIDR_BLOCK"
+          network_entity_id = local.region_vars.locals.neom_vpn_drg_id
+        },
+        {
+          description       = "VPN"
+          destination       = local.region_vars.locals.neom_vpn_cidr
+          destination_type  = "CIDR_BLOCK"
+          network_entity_id = local.region_vars.locals.neom_vpn_drg_id
+        },
         {
           description       = "All subnets route Oracle services through service gateway"
           destination       = "SERVICE_CIDR_BLOCK"
