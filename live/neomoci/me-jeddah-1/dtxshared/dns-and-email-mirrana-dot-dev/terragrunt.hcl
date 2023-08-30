@@ -14,4 +14,11 @@ inputs = {
   compartment_id   = local.env_vars.locals.compartment_id
   compartment_name = local.env_vars.locals.compartment_name
   name             = "mirrana.dev"
+
+  groups_allowed_to_update = [
+    {
+      name = "TONOMUS_DTX_PaaS-Sandbox_OKE_Workers_DynamicGroup"
+      type = "dynamic-group"
+    }
+  ]
 }

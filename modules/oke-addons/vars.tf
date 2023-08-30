@@ -8,6 +8,11 @@ variable "compartment_id" {
   type        = string
 }
 
+variable "shared_compartment_id" {
+  description = "The compartment id for placing resources"
+  type        = string
+}
+
 variable "compartment_name" {
   description = "The compartment name for the zone"
   type        = string
@@ -43,7 +48,27 @@ variable "data_subnet_id" {
   type        = string
 }
 
-variable "service_id_secret" {
-  description = "secret data for service id"
+variable "vault_id" {
+  description = "Vault id"
   type        = string
+}
+
+variable "kms_key_id" {
+  description = "KMS key id for the vault"
+  type        = string
+}
+
+variable "service_id_secret" {
+  description = "Secret data for service id"
+  type        = string
+}
+
+variable "cluster_workers_group" {
+  description = "Kubernetes cluster workers dynamic group"
+  type        = string
+}
+
+variable "allowed_domain_zones" {
+  description = "List of allowed domain zones for external-dns management"
+  type        = list(string)
 }

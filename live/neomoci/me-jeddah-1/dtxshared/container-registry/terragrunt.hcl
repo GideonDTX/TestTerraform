@@ -17,7 +17,7 @@ inputs = {
   access_groups  = {
     readonly = [
       "TONOMUS_DTX_PaaS-Dev_Read",
-      "TONOMUS_DTX_PaaS-Dev_Read_Group",
+      "TONOMUS_DTX_Paas-Prod_Read",
     ]
   }
 

@@ -139,7 +139,7 @@ spec:
       serviceAccountName: cluster-autoscaler
       priorityClassName: system-cluster-critical
       containers:
-        - image: fra.ocir.io/oracle/oci-cluster-autoscaler:${cluster_autoscaler_version}
+        - image: fra.ocir.io/oracle/oci-cluster-autoscaler:${image_tag}
           name: cluster-autoscaler
           resources:
             limits:

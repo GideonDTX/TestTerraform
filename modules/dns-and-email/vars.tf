@@ -19,20 +19,11 @@ variable "compartment_name" {
   type        = string
 }
 
-variable "allow_users_to_update_records" {
-  description = "Users and records map"
-  type        = map(list(string))
-  default = {}
+variable "groups_allowed_to_update" {
+  description = "Group permissions"
+  type        = list(object({
+    name    = string
+    type    = string
+  }))
+  default = []
 }
-
-#
-# Example:
-#
-# {
-#   "oracleidentitycloudservice/dtxsandbox@neom.com" = [
-#     "sandbox",
-#     "sandbox-api",
-#     "sandbox-id",
-#   ]
-# }
-#

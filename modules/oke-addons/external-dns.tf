@@ -1,109 +1,116 @@
-# locals {
-#   external_dns_version = "0.13.5"
-#   external_dns_labels = {
-#     "app.kubernetes.io/name"       = "external-dns"
-#     "app.kubernetes.io/instance"   = "external-dns"
-#     "app.kubernetes.io/component"  = "utility"
-#     "app.kubernetes.io/part-of"    = "external-dns"
-#     "app.kubernetes.io/managed-by" = "terraform"
-#   }
-# }
+locals {
+  external_dns_version = "0.13.5"
+  external_dns_labels = {
+    "app.kubernetes.io/name"       = "external-dns"
+    "app.kubernetes.io/instance"   = "external-dns"
+    "app.kubernetes.io/component"  = "utility"
+    "app.kubernetes.io/part-of"    = "external-dns"
+    "app.kubernetes.io/managed-by" = "terraform"
+  }
+}
 
-# # From https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/oracle.md
-# resource "kubernetes_service_account_v1" "external-dns" {
-#   metadata {
-#     name      = "external-dns"
-#     namespace = "kube-system"
-#   }
-#   automount_service_account_token = false
-# }
+data "oci_dns_zones" "this" {
+  for_each = toset(var.allowed_domain_zones)
 
-# resource "kubernetes_cluster_role" "external-dns" {
-#   metadata {
-#     name      = "external-dns"
-#   }
+  compartment_id = var.shared_compartment_id
+  name           = each.key
+}
 
-#   rule {
-#     api_groups     = [""]
-#     resources      = ["services", "endpoints", "pods"]
-#     verbs          = ["get", "watch", "list"]
-#   }
+# From https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/oracle.md
+resource "kubernetes_service_account_v1" "external-dns" {
+  metadata {
+    name      = "external-dns"
+    namespace = "kube-system"
+  }
+  automount_service_account_token = false
+}
 
-#   rule {
-#     api_groups     = ["extensions", "networking.k8s.io"]
-#     resources      = ["ingresses"]
-#     verbs          = ["get", "watch", "list"]
-#   }
+resource "kubernetes_cluster_role_v1" "external-dns" {
+  metadata {
+    name = "external-dns"
+  }
 
-#   rule {
-#     api_groups     = [""]
-#     resources      = ["nodes"]
-#     verbs          = ["list"]
-#   }
+  rule {
+    api_groups     = [""]
+    resources      = ["services", "endpoints", "pods"]
+    verbs          = ["get", "watch", "list"]
+  }
 
-#   rule {
-#     api_groups     = [""]
-#     resources      = ["secrets"]
-#     resource_names = ["ocidns-external-dns"]
-#     verbs          = ["get"]
-#   }
-# }
+  rule {
+    api_groups     = ["extensions", "networking.k8s.io"]
+    resources      = ["ingresses"]
+    verbs          = ["get", "watch", "list"]
+  }
 
-# resource "kubernetes_cluster_role_binding" "external-dns" {
-#   metadata {
-#     name      = "external-dns"
-#   }
+  rule {
+    api_groups     = [""]
+    resources      = ["nodes"]
+    verbs          = ["list"]
+  }
+}
 
-#   role_ref {
-#     api_group = "rbac.authorization.k8s.io"
-#     kind      = "ClusterRole"
-#     name      = "external-dns"
-#   }
+resource "kubernetes_cluster_role_binding_v1" "external-dns" {
+  metadata {
+    name      = "external-dns-viewer"
+  }
 
-#   subject {
-#     kind      = "ServiceAccount"
-#     name      = "external-dns"
-#     namespace = "kube-system"
-#   }
-# }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "external-dns"
+  }
 
-# resource "kubernetes_deployment" "external-dns" {
-#   metadata {
-#     name      = "external-dns"
-#     namespace = "kube-system"
-#   }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "external-dns"
+    namespace = "kube-system"
+  }
+}
 
-#   spec {
-#     selector {
-#       match_labels = local.external_dns_labels
-#     }
+resource "kubernetes_deployment_v1" "external-dns" {
+  metadata {
+    name      = "external-dns"
+    namespace = "kube-system"
+  }
 
-#     template {
-#       metadata {
-#         labels = local.external_dns_labels
-#       }
+  spec {
+    strategy {
+      type = "Recreate"
+    }
 
-#       spec {
-#         container {
-#           name  = "external-dns"
-#           image = "k8s.gcr.io/external-dns/external-dns:v${local.external_dns_version}"
-#           args  = [
-#             "--source=service",
-#             "--source=ingress",
-#             "--provider=oci",
-#             "--policy=upsert-only",
-#             "--interval=90s",
-#             "--txt-owner-id=${var.cluster_name}-ext-dns",
-#             "--oci-auth-instance-principal"
-#           ]
-#         }
+    selector {
+      match_labels = local.external_dns_labels
+    }
 
-#         service_account_name = "external-dns"
-#       }
-#     }
+    template {
+      metadata {
+        labels = local.external_dns_labels
+      }
 
-#     strategy {
-#       type = "Recreate"
-#     }
-#   }
-# }
+      spec {
+        container {
+          name  = "external-dns"
+          image = "registry.k8s.io/external-dns/external-dns:v${local.external_dns_version}"
+          args  = concat(
+            [
+              "--source=service",
+              "--source=ingress",
+              "--provider=oci",
+              "--oci-auth-instance-principal",
+              "--oci-compartment-ocid=${var.shared_compartment_id}",
+              "--policy=upsert-only",
+              "--interval=90s",
+              "--txt-owner-id=${var.cluster_name}-ext-dns",
+            ],
+            [
+              for zone in var.allowed_domain_zones:
+                "--zone-id-filter=${data.oci_dns_zones.this[zone].zones[0].id}"
+            ]
+          )
+        }
+
+        service_account_name = "external-dns"
+      }
+    }
+  }
+}

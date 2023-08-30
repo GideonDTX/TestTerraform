@@ -50,14 +50,19 @@ dependencies {
 }
 
 inputs = {
-  region               = local.region_vars.locals.region
-  compartment_id       = dependency.vcn.outputs.compartment_id
-  compartment_name     = local.env_vars.locals.compartment_name
-  vcn_id               = dependency.vcn.outputs.id
-  cluster_id           = dependency.cluster.outputs.id
-  cluster_name         = dependency.cluster.outputs.name
-  workers_nsg_id       = dependency.cluster.outputs.network_security_groups["workers"].id
-  loadbalancers_nsg_id = dependency.cluster.outputs.network_security_groups["loadbalancers"].id
-  data_subnet_id       = dependency.vcn.outputs.subnets["data1"].id
-  service_id_secret    = local.env_vars.locals.service_id_secret
+  region                = local.region_vars.locals.region
+  compartment_id        = dependency.vcn.outputs.compartment_id
+  shared_compartment_id = local.env_vars.locals.shared_compartment_id
+  compartment_name      = local.env_vars.locals.compartment_name
+  vcn_id                = dependency.vcn.outputs.id
+  cluster_id            = dependency.cluster.outputs.id
+  cluster_name          = dependency.cluster.outputs.name
+  workers_nsg_id        = dependency.cluster.outputs.network_security_groups["workers"].id
+  loadbalancers_nsg_id  = dependency.cluster.outputs.network_security_groups["loadbalancers"].id
+  data_subnet_id        = dependency.vcn.outputs.subnets["data1"].id
+  vault_id              = dependency.vcn.outputs.vault_id
+  kms_key_id            = dependency.vcn.outputs.kms_key_id
+  service_id_secret     = local.env_vars.locals.service_id_secret
+  cluster_workers_group = local.env_vars.locals.cluster_workers_group
+  allowed_domain_zones  = local.env_vars.locals.allowed_domain_zones
 }

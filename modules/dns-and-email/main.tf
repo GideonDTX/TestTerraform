@@ -70,20 +70,18 @@ resource "oci_dns_rrset" "spf" {
 }
 
 resource "oci_identity_policy" "this" {
-  for_each = var.allow_users_to_update_records
-
   compartment_id = var.compartment_id
 
-  name           = "dns-update-${each.key}"
-  description    = "allow ocidns group to manage ${var.name}"
+  name           = "dns-update-${replace(var.name, "/\\./", "-dot-")}"
+  description    = "allow groups to manage ${var.name}"
 
-  statements = concat(
+  statements = flatten(concat(
     [
-      "Allow group ${each.key} to read dns-zones in compartment ${var.compartment_name}",
-      "Allow group ${each.key} to read dns-zones in compartment ${var.compartment_name} where target.dns-zone.name = '${var.name}'"
+      for obj in var.groups_allowed_to_update: [
+        "Allow ${obj.type} ${obj.name} to read dns-zones in compartment ${var.compartment_name}",
+        "Allow ${obj.type} ${obj.name} to use dns-zones in compartment ${var.compartment_name} where target.dns-zone.name = '${var.name}'",
+        "Allow ${obj.type} ${obj.name} to use dns-records in compartment ${var.compartment_name} where target.dns-zone.name = '${var.name}'",
+      ]
     ],
-    [
-      for record in each.value: "Allow group ${each.key} to use dns-records in compartment ${var.compartment_name} where all { target.dns-domain.name = '${record}.${var.name}' }"
-    ]
-  )
+  ))
 }

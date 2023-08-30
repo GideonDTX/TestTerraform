@@ -14,7 +14,7 @@ output "vault_id" {
   value = oci_kms_vault.this.id
 }
 
-output "kms_id" {
+output "kms_key_id" {
   value = oci_kms_key.this.id
 }
 
