@@ -25,15 +25,4 @@ inputs = {
       type = "dynamic-group"
     }
   ]
-
-  groups_allowed_to_send_email = [
-    {
-      name = "TONOMUS_DTX_PaaS-Dev_Read"
-      type = "group"
-    },
-    {
-      name = "TONOMUS_DTX_Paas-Prod_Read"
-      type = "group"
-    },
-  ]
 }

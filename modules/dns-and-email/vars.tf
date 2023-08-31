@@ -27,12 +27,3 @@ variable "groups_allowed_to_update_dns" {
   }))
   default = []
 }
-
-variable "groups_allowed_to_send_email" {
-  description = "Group permissions"
-  type        = list(object({
-    name    = string
-    type    = string
-  }))
-  default = []
-}

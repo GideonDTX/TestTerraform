@@ -83,10 +83,5 @@ resource "oci_identity_policy" "this" {
         "Allow ${obj.type} ${obj.name} to use dns-records in compartment ${var.compartment_name} where target.dns-zone.name = '${var.name}'",
       ]
     ],
-    [
-      for obj in var.groups_allowed_to_send_email: [
-        "Allow ${obj.type} ${obj.name} to use approved-senders in compartment id ${var.compartment_id}",
-      ]
-    ],
   ))
 }
