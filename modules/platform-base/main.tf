@@ -1,3 +1,43 @@
+terraform {
+  required_providers {
+    oci = {
+      source  = "oracle/oci"
+    }
+
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+    }
+
+    helm = {
+      source  = "hashicorp/helm"
+    }
+
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+    }
+  }
+}
+
+### resources
+
+# namespace
+resource "kubernetes_namespace_v1" "this" {
+  metadata {
+    name = var.kubernetes_namespace
+  }
+}
+
+# service account
+resource "kubernetes_service_account_v1" "this" {
+  metadata {
+    name      = "platform"
+    namespace = var.kubernetes_namespace
+  }
+  automount_service_account_token = false
+}
+
+### datasources - needed for provider setup or other resources
+
 # os namespace
 data "oci_objectstorage_namespace" "this" {
   compartment_id = var.compartment_id
@@ -10,72 +50,83 @@ data "oci_identity_availability_domains" "this" {
 
 # lookup the mount target for this vcn/oke
 data "oci_file_storage_mount_targets" "this" {
-  display_name        = "${var.oke_name}-oke"
+  display_name        = "${var.cluster_name}-oke"
   availability_domain = data.oci_identity_availability_domains.this.availability_domains[0].name
   compartment_id      = var.compartment_id
 }
 
 data "oci_file_storage_export_sets" "this" {
-  display_name        = "${var.oke_name}-oke"
+  display_name        = "${var.cluster_name}-oke"
   availability_domain = data.oci_identity_availability_domains.this.availability_domains[0].name
   compartment_id      = var.compartment_id
 }
 
-# namespace
-resource "kubernetes_namespace_v1" "this" {
-  metadata {
-    name = var.kubes_namespace
-  }
-}
-
-# @todo - make this an external secret and pull form service id
-# resource "kubernetes_secret_v1" "image-pull" {
-#   metadata {
-#     name      = "image-pull"
-#     namespace = var.kubes_namespace
-#   }
-
-#   type = data.kubernetes_secret_v1.kube-system-image-pull.type
-#   data = data.kubernetes_secret_v1.kube-system-image-pull.data
+# # oke
+# data "oci_containerengine_clusters" "this" {
+#   name           = var.cluster_name
+#   compartment_id = var.compartment_id
+#   state          = ["ACTIVE"]
 # }
 
-resource "kubernetes_role" "image-pull-reader" {
-  depends_on = [
-    kubernetes_namespace_v1.this
-  ]
+# # nodepools
+# data "oci_containerengine_node_pools" "this" {
+#   compartment_id = var.compartment_id
+#   cluster_id     = data.oci_containerengine_clusters.this.clusters[0].id
+#   state          = ["ACTIVE", "UPDATING"]
+# }
 
-  metadata {
-    name      = "image-pull-reader"
-    namespace = var.kubes_namespace
-  }
+# # kubeconf
+# data "oci_containerengine_cluster_kube_config" "this" {
+#   cluster_id = data.oci_containerengine_clusters.this.clusters[0].id
+# }
 
-  rule {
-    api_groups     = [""]
-    resources      = ["secrets"]
-    resource_names = ["image-pull"]
-    verbs          = ["get"]
+# provider "kubernetes" {
+#   host                   = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.server
+#   cluster_ca_certificate = base64decode(yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.certificate-authority-data)
+#   exec {
+#     api_version = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.apiVersion
+#     command     = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.command
+#     args        = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.args
+#   }
+# }
+
+# this is the bastion configuration
+provider "kubernetes" {
+  config_path    = "~/.kube/config"
+  config_context = "${var.cluster_name}-bastion"
+}
+
+# provider "helm" {
+#   kubernetes {
+#     host                   = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.server
+#     cluster_ca_certificate = base64decode(yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.certificate-authority-data)
+#     exec {
+#       api_version = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.apiVersion
+#       command     = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.command
+#       args        = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.args
+#     }
+#   }
+# }
+
+# this is the bastion configuration
+provider "helm" {
+  kubernetes {
+    config_path    = "~/.kube/config"
+    config_context = "${var.cluster_name}-bastion"
   }
 }
 
-resource "kubernetes_role_binding" "image-pull-reader-default" {
-  depends_on = [
-    kubernetes_namespace_v1.this
-  ]
+# provider "kubectl" {
+#   host                   = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.server
+#   cluster_ca_certificate = base64decode(yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.certificate-authority-data)
+#   exec {
+#     api_version = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.apiVersion
+#     command     = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.command
+#     args        = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.args
+#   }
+# }
 
-  metadata {
-    name      = "image-pull-reader-default"
-    namespace = var.kubes_namespace
-  }
-
-  role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind      = "Role"
-    name      = "image-pull-reader"
-  }
-
-  subject {
-    kind      = "ServiceAccount"
-    name      = "default"
-    namespace = var.kubes_namespace
-  }
+provider "kubectl" {
+  config_path    = "~/.kube/config"
+  config_context = "${var.cluster_name}-bastion"
 }

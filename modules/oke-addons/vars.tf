@@ -9,7 +9,7 @@ variable "compartment_id" {
 }
 
 variable "shared_compartment_id" {
-  description = "The compartment id for placing resources"
+  description = "The compartment id for shared resources"
   type        = string
 }
 

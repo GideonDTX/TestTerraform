@@ -1,6 +1,6 @@
 # create the api-gateway filesystem
 resource "oci_file_storage_file_system" "api-gateway" {
-  display_name        = "${var.env_name}-api-gateway"
+  display_name        = "${var.kubernetes_namespace}-api-gateway"
   compartment_id      = var.compartment_id
   availability_domain = data.oci_identity_availability_domains.this.availability_domains[0].name
 }
@@ -9,7 +9,7 @@ resource "oci_file_storage_file_system" "api-gateway" {
 resource "oci_file_storage_export" "api-gateway" {
   export_set_id  = data.oci_file_storage_export_sets.this.export_sets[0].id
   file_system_id = oci_file_storage_file_system.api-gateway.id
-  path           = "/${var.env_name}-api-gateway"
+  path           = "/${var.kubernetes_namespace}-api-gateway"
 
   export_options {
     source                         = "0.0.0.0/0" # this is okay because we are protecting it via network source groups
@@ -21,7 +21,7 @@ resource "oci_file_storage_export" "api-gateway" {
 
 resource "kubernetes_persistent_volume" "api-gateway" {
   metadata {
-    name = "${var.env_name}-api-gateway"
+    name = "${var.kubernetes_namespace}-api-gateway"
   }
 
   spec {
@@ -41,8 +41,8 @@ resource "kubernetes_persistent_volume" "api-gateway" {
 
     persistent_volume_source  {
       nfs {
-        server    = "fss1.data1.${var.oke_name}.oraclevcn.com"
-        path      = "/${var.env_name}-api-gateway"
+        server    = "fss1.data1.${var.cluster_name}.oraclevcn.com"
+        path      = "/${var.kubernetes_namespace}-api-gateway"
         read_only = false
       }
     }
@@ -56,7 +56,7 @@ resource "kubernetes_persistent_volume_claim" "api-gateway" {
 
   metadata {
     name      = "api-gateway"
-    namespace = var.kubes_namespace
+    namespace = var.kubernetes_namespace
   }
 
   spec {
@@ -72,6 +72,6 @@ resource "kubernetes_persistent_volume_claim" "api-gateway" {
       "ReadWriteMany"
     ]
 
-    volume_name = "${var.env_name}-api-gateway"
+    volume_name = "${var.kubernetes_namespace}-api-gateway"
   }
 }

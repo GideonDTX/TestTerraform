@@ -19,7 +19,16 @@ variable "compartment_name" {
   type        = string
 }
 
-variable "groups_allowed_to_update" {
+variable "groups_allowed_to_update_dns" {
+  description = "Group permissions"
+  type        = list(object({
+    name    = string
+    type    = string
+  }))
+  default = []
+}
+
+variable "groups_allowed_to_send_email" {
   description = "Group permissions"
   type        = list(object({
     name    = string

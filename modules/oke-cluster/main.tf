@@ -241,7 +241,6 @@ resource "oci_core_network_security_group_security_rule" "api_ingress_6443" {
   }
 }
 
-
 resource "oci_core_network_security_group_security_rule" "api_ingress_bastion_6443" {
   description = "allow workers to communicate with api on 6443"
 

@@ -11,5 +11,5 @@ data "oci_secrets_secretbundle" "service_id" {
 }
 
 locals {
-  service_id = yamldecode(base64decode(data.oci_secrets_secretbundle.service_id.secret_bundle_content[0].content))
+  service_id = jsondecode(base64decode(data.oci_secrets_secretbundle.service_id.secret_bundle_content[0].content))
 }

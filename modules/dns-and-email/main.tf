@@ -72,15 +72,20 @@ resource "oci_dns_rrset" "spf" {
 resource "oci_identity_policy" "this" {
   compartment_id = var.compartment_id
 
-  name           = "dns-update-${replace(var.name, "/\\./", "-dot-")}"
+  name           = "dns-and-email-update-${replace(var.name, "/\\./", "-dot-")}"
   description    = "allow groups to manage ${var.name}"
 
   statements = flatten(concat(
     [
-      for obj in var.groups_allowed_to_update: [
+      for obj in var.groups_allowed_to_update_dns: [
         "Allow ${obj.type} ${obj.name} to read dns-zones in compartment ${var.compartment_name}",
         "Allow ${obj.type} ${obj.name} to use dns-zones in compartment ${var.compartment_name} where target.dns-zone.name = '${var.name}'",
         "Allow ${obj.type} ${obj.name} to use dns-records in compartment ${var.compartment_name} where target.dns-zone.name = '${var.name}'",
+      ]
+    ],
+    [
+      for obj in var.groups_allowed_to_send_email: [
+        "Allow ${obj.type} ${obj.name} to use approved-senders in compartment id ${var.compartment_id}",
       ]
     ],
   ))

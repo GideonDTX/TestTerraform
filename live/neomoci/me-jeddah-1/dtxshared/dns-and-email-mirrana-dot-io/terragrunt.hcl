@@ -15,10 +15,25 @@ inputs = {
   compartment_name = local.env_vars.locals.compartment_name
   name             = "mirrana.io"
 
-  groups_allowed_to_update = [
+  groups_allowed_to_update_dns = [
     {
       name = "TONOMUS_DTX_PaaS-Sandbox_OKE_Workers_DynamicGroup"
       type = "dynamic-group"
+    },
+    {
+      name = "TONOMUS_DTX_PaaS-Prod_OKE_Workers_DynamicGroup"
+      type = "dynamic-group"
     }
+  ]
+
+  groups_allowed_to_send_email = [
+    {
+      name = "TONOMUS_DTX_PaaS-Dev_Read"
+      type = "group"
+    },
+    {
+      name = "TONOMUS_DTX_Paas-Prod_Read"
+      type = "group"
+    },
   ]
 }

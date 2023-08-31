@@ -5,7 +5,7 @@
 
 #   metadata {
 #     name      = "allow-intra-namespace"
-#     namespace = var.kubes_namespace
+#     namespace = var.kubernetes_namespace
 #   }
 
 #   spec {

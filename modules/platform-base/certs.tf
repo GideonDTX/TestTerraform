@@ -1,5 +1,3 @@
-# @todo - how to handle public certs? External Secret? Config Map?
-
 # resource "kubernetes_secret_v1" "certs" {
 #   metadata {
 #     name      = "certs"
@@ -8,5 +6,9 @@
 
 #   type = "Opaque"
 
-#   data = {}
+#   data = {
+#     "dtxnonprodmongodb1.crt" = <<-EOT
+#     # insert public cert here
+#     EOT
+#   }
 # }

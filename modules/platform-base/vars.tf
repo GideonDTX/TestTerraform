@@ -4,22 +4,37 @@ variable "region" {
 }
 
 variable "compartment_id" {
+  description = "The compartment id"
+  type        = string
+}
+
+variable "shared_compartment_id" {
   description = "The compartment id for placing resources"
   type        = string
 }
 
-variable "oke_name" {
-  description = "The oke name"
+variable "compartment_name" {
+  description = "The compartment name"
   type        = string
 }
 
-variable "env_name" {
-  description = "The environment name"
+variable "cluster_id" {
+  description = "The id of the OKE cluster"
   type        = string
 }
 
-variable "kubes_namespace" {
+variable "cluster_name" {
+  description = "The name of the OKE cluster"
+  type        = string
+}
+
+variable "kubernetes_namespace" {
   description = "The Kubernetes namespace of the application environment"
+  type        = string
+}
+
+variable "service_id_secret" {
+  description = "Secret data for service id"
   type        = string
 }
 
@@ -28,7 +43,3 @@ variable "approved_senders" {
   type        = list(string)
 }
 
-variable "service_group" {
-  description = "the service group to grant OCI API permissions to"
-  type        = string
-}

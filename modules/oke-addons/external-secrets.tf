@@ -20,3 +20,21 @@ resource "helm_release" "external-secrets" {
   chart      = "external-secrets"
   version    = "0.9.4"
 }
+
+resource "kubectl_manifest" "external-secrets-oci-vault" {
+  depends_on = [ 
+    oci_identity_policy.external-secrets-read-vault
+  ]
+
+  yaml_body = <<-EOT
+    apiVersion: external-secrets.io/v1beta1
+    kind: ClusterSecretStore
+    metadata:
+      name: oci-vault-${var.cluster_name}
+    spec:
+      provider:
+        oracle:
+          vault: ${var.vault_id}
+          region: ${var.region}
+  EOT
+}
