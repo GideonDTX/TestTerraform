@@ -23,6 +23,14 @@ inputs = {
     {
       name = "TONOMUS_DTX_PaaS-Prod_OKE_Workers_DynamicGroup"
       type = "dynamic-group"
-    }
+    },
+    {
+      name = "TONOMUS_DTX_PaaS-Dev_Read"
+      type = "group"
+    },
+    {
+      name = "TONOMUS_DTX_Paas-Prod_Read"
+      type = "group"
+    },
   ]
 }

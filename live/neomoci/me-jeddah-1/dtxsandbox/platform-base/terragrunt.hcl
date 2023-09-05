@@ -44,4 +44,5 @@ inputs = {
   kubernetes_namespace  = dependency.cluster.outputs.name
   service_id_secret     = local.env_vars.locals.service_id_secret
   approved_senders      = local.approved_senders
+  dns_names             = local.env_vars.locals.dns_names
 }

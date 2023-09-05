@@ -43,3 +43,8 @@ variable "approved_senders" {
   type        = list(string)
 }
 
+variable "dns_names" {
+  description = "DNS names to be used on platform"
+  type        = map(string)
+}
+

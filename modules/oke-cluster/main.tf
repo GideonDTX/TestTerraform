@@ -404,6 +404,23 @@ resource "oci_core_network_security_group_security_rule" "workers_egress_https" 
   }
 }
 
+resource "oci_core_network_security_group_security_rule" "workers_egress_dns" {
+  description = "allow outgoing dns from workers for cert-manager"
+
+  network_security_group_id = oci_core_network_security_group.workers.id
+  direction                 = "EGRESS"
+  destination               = local.anywhere
+  destination_type          = "CIDR_BLOCK"
+  protocol                  = local.tcp
+
+  tcp_options {
+    destination_port_range {
+      min = 53
+      max = 53
+    }
+  }
+}
+
 resource "oci_core_network_security_group_security_rule" "workers_egress_inter_node" {
   description = "all inter-node traffic is allowed to support kubernetes and network overlay"
 

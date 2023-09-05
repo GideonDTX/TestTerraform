@@ -9,4 +9,12 @@ locals {
     "mirrana.io",
     "mirrana.dev",
   ]
+  dns_names   = {
+    app      = "sandbox.mirrana.io"
+    api      = "sandbox-api.mirrana.io"
+    id       = "sandbox-id.mirrana.io"
+    dev      = "sandbox.mirrana.dev"
+    devadmin = "sandbox-admin.mirrana.dev"
+    npm      = "sandbox-npm.mirrana.dev"
+  }
 }

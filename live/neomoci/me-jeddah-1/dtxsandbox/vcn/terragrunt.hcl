@@ -218,6 +218,17 @@ inputs = {
         },
         # egress rules
         {
+          # outgoing connections from subnet to anywhere for dns for cert-manager
+          description = "Allow outgoing dns/tcp to anywhere for cert-manager"
+          direction   = "egress"
+          destination = local.anywhere
+          protocol    = local.tcp
+          tcp_options = {
+            min = 53
+            max = 53
+          }
+        },
+        {
           # for acccess from load balancer to worker nodes on application subnet
           # https://docs.oracle.com/en-us/iaas/Content/ContEng/Concepts/contengnetworkconfig.htm#securitylistconfig__security_rules_for_load_balancers
           description = "Allow outgoing from load balancer to k8s worker node subnet"
@@ -337,6 +348,17 @@ inputs = {
           tcp_options = {
             min = 443
             max = 443
+          }
+        },
+        {
+          # outgoing connections from subnet to anywhere for dns for cert-manager
+          description = "Allow outgoing dns/tcp to anywhere for cert-manager"
+          direction   = "egress"
+          destination = local.anywhere
+          protocol    = local.tcp
+          tcp_options = {
+            min = 53
+            max = 53
           }
         },
         {
