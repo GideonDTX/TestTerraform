@@ -438,6 +438,17 @@ inputs = {
             max = 2048
           }
         },
+        {
+          # outgoing connections from subnet to data for kafka/tcp
+          description = "Allow outgoing kafka/tcp to data subnet"
+          direction   = "egress"
+          destination = local.data1_cidr
+          protocol    = local.tcp
+          tcp_options = {
+            min = 9092
+            max = 9092
+          }
+        },
       ],
       local.ingress_icmp, local.egress_icmp, local.bastion_private)
     }
@@ -621,6 +632,17 @@ inputs = {
           udp_options = {
             min = 2048
             max = 2048
+          }
+        },
+        {
+          # incoming connections from application subnet for kafka/tcp
+          description = "Allow incoming kafka/tcp from application subnet"
+          direction   = "ingress"
+          source      = local.application1_cidr
+          protocol    = local.tcp
+          tcp_options = {
+            min = 9092
+            max = 9092
           }
         },
         # egress rules

@@ -18,6 +18,11 @@ variable "compartment_name" {
   type        = string
 }
 
+variable "vcn_id" {
+  description = "The id of the VCN network"
+  type        = string
+}
+
 variable "cluster_id" {
   description = "The id of the OKE cluster"
   type        = string

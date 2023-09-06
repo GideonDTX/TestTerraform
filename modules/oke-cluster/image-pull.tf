@@ -1,7 +1,3 @@
-locals {
-  service_id = yamldecode(base64decode(data.oci_secrets_secretbundle.service_id.secret_bundle_content[0].content))
-}
-
 # provider setup (after cluster is running)
 data "oci_containerengine_cluster_kube_config" "this" {
   cluster_id = oci_containerengine_cluster.this.id
@@ -22,16 +18,6 @@ data "oci_containerengine_cluster_kube_config" "this" {
 provider "kubernetes" {
   config_path    = "~/.kube/config"
   config_context = "${var.name}-bastion"
-}
-
-data "oci_vault_secrets" "service_id" {
-  compartment_id = var.compartment_id
-  name           = var.service_id_secret
-  state          = "ACTIVE"
-}
-
-data "oci_secrets_secretbundle" "service_id" {
-  secret_id = data.oci_vault_secrets.service_id.secrets[0].id
 }
 
 resource "kubernetes_secret_v1" "image-pull" {
