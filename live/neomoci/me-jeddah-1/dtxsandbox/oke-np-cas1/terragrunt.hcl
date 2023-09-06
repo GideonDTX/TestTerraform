@@ -24,12 +24,12 @@ locals {
   image_id  = "ocid1.image.oc1.me-jeddah-1.aaaaaaaav2eia7qmlzxb2a2gxgxwq5dcazd66cfpnl2pqus4rxkbzxc2ohhq"
 
   # note cpu/memory values must be valid ratios (check documentation)
-  cpu    = 1
-  memory = 8
+  cpu    = 4
+  memory = 16
   disk   = 150
 
   labels = {
-    "node.kubernetes.io/type" = "system"
+    "node.kubernetes.io/type" = "autoscale"
   }
 }
 

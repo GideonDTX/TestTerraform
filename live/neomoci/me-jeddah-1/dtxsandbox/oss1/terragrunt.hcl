@@ -39,9 +39,16 @@ dependency "cluster" {
     "validate"
   ]
   mock_outputs = {
-    name               = "fake-name"
-    public_subnet_ids  = ["fake-public-subnet-id"]
-    private_subnet_ids = ["fake-private-subnet-id"]
+    id                      = "fake-id"
+    name                    = "fake-name"
+    compartment_id          = "fake-compartment-id"
+    private_subnet_id       = "fake-private-subnet-id"
+    network_security_groups = {
+      workers = {
+        id   = "ABC"
+      }
+    }
+    ssh_public_key = "fake-ssh-key"
   }
 }
 

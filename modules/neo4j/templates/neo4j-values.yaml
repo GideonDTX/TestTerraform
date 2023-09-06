@@ -1,0 +1,74 @@
+neo4j:
+  name: ${cluster_name}
+
+  imagePullSecret: 
+  existingPasswordSecret: neo4j
+  existingPasswordSecretKey: NEO4J_DATA
+
+  edition: "community"
+  acceptLicenseAgreement: "no"
+
+  resources:
+    cpu: "2"
+    memory: "8Gi"
+
+volumes:
+  data:
+    mode: "dynamic"
+    dynamic:
+      storageClassName: ${storage_class_name}
+      accessModes:
+        - ReadWriteOnce
+      requests:
+        storage: 20Gi
+
+image:
+  registry: ${container_repo_host}
+  imagePullPolicy: Always
+
+env:
+  NEO4J_PLUGINS: '["apoc"]'
+
+podSpec:
+  annotations:
+    "linkerd.io/inject": "enabled"
+
+logInitialPassword: true
+
+config:
+  dbms.memory.heap.initial_size: "3600m"
+  dbms.memory.heap.max_size: "3600m"
+  dbms.memory.pagecache.size: "2g"
+
+jvm:
+  useNeo4jDefaultJvmArguments: true
+  additionalJvmArguments:
+  - "-XX:+ExitOnOutOfMemoryError"
+
+services:
+  neo4j:
+    enabled: true
+    spec:
+      type: ClusterIP
+    ports:
+      http:
+        enabled: true 
+        port: 7474
+      https:
+        enabled: true 
+        port: 7473
+      bolt:
+        enabled: true
+        port: 7687
+    selector:
+      "app.kubernetes.io/name": "${cluster_name}"
+      "app.kubernetes.io/instance": "${cluster_name}-${kubernetes_namespace}"
+      "app.kubernetes.io/component": "neo4j"
+      "app.kubernetes.io/part-of": "neo4j"
+      "app.kubernetes.io/managed-by": "terraform"
+
+  admin:
+    enabled: true
+    annotations: {}
+    spec:
+      type: ClusterIP
