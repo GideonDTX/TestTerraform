@@ -38,7 +38,7 @@ dependencies {
 }
 
 inputs = {
-  helm_chart_version   = "v4.4.19"
+  helm_chart_version   = "v4.4.25"
   compartment_id       = local.env_vars.locals.compartment_id
   compartment_name     = local.env_vars.locals.compartment_name
   cluster_id           = dependency.cluster.outputs.id

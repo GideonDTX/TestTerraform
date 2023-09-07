@@ -31,7 +31,6 @@ resource "oci_containerengine_node_pool" "this" {
     size = var.min_size
 
     nsg_ids                             = [var.node_network_security_group_id]
-    is_pv_encryption_in_transit_enabled = true
 
     node_pool_pod_network_option_details {
       cni_type = "FLANNEL_OVERLAY"

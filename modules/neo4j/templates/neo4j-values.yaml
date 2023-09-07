@@ -1,15 +1,12 @@
 neo4j:
   name: ${cluster_name}
-
-  imagePullSecret: 
-  existingPasswordSecret: neo4j
-  existingPasswordSecretKey: NEO4J_DATA
+  passwordFromSecret: neo4j
 
   edition: "community"
   acceptLicenseAgreement: "no"
 
   resources:
-    cpu: "2"
+    cpu: "1500m"
     memory: "8Gi"
 
 volumes:
@@ -20,7 +17,7 @@ volumes:
       accessModes:
         - ReadWriteOnce
       requests:
-        storage: 20Gi
+        storage: 50G
 
 image:
   registry: ${container_repo_host}

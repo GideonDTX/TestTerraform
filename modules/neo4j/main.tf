@@ -61,7 +61,11 @@ resource "kubernetes_secret_v1" "neo4j" {
   type = "Opaque"
 
   data = {
-    "NEO4J_DATA": random_password.neo4j.result
+    # helm chart requires the password value to start with 'neo4j/'
+    # but it will trim that off to use as actual password
+    NEO4J_AUTH     = "neo4j/${random_password.neo4j.result}"
+    # so this is the actual password (and ItemService can mount this as env var)
+    NEO4J_PASSWORD = random_password.neo4j.result
   }
 }
 
