@@ -10,6 +10,10 @@ locals {
   region_vars      = read_terragrunt_config(find_in_parent_folders("region.hcl"))
   environment_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
   stack_vars       = merge(local.defaults, local.stack_yaml)
+
+  oci_auth             = "${can(get_env("OCI_CLI_AUTH")) ? get_env("OCI_CLI_AUTH") : "api_key" }"
+  oci_auth_pascal_case = "${can(get_env("OCI_CLI_AUTH")) ? join("", [for word in split("_", get_env("OCI_CLI_AUTH")): title(word)]) : "APIKey" }"
+  oci_profile          = "${can(get_env("OCI_CLI_PROFILE")) ? get_env("OCI_CLI_PROFILE") : "DEFAULT" }"
 }
 
 # it feels like I could make this smarter
@@ -22,8 +26,8 @@ generate "provider" {
   # main provider for oci
   provider "oci" {
     region              = "${local.region_vars.locals.region}"
-    auth                = "SecurityToken"
-    config_file_profile = "${get_env("OCI_CLI_PROFILE")}"
+    auth                = "${local.oci_auth_pascal_case}"
+    config_file_profile = "${local.oci_profile}"
   }
 
   %{if local.stack_vars.enable_kubernetes}
@@ -63,6 +67,10 @@ generate "provider" {
       api_version = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.apiVersion
       command     = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.command
       args        = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.args
+      env         = {
+        OCI_CLI_AUTH    = "${local.oci_auth}"
+        OCI_CLI_PROFILE = "${local.oci_profile}"
+      }
     }
   }
 
@@ -75,6 +83,10 @@ generate "provider" {
         api_version = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.apiVersion
         command     = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.command
         args        = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.args
+        env         = {
+          OCI_CLI_AUTH    = "${local.oci_auth}"
+          OCI_CLI_PROFILE = "${local.oci_profile}"
+        }
       }
     }
   }
@@ -88,6 +100,10 @@ generate "provider" {
       api_version = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.apiVersion
       command     = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.command
       args        = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.args
+      env         = {
+        OCI_CLI_AUTH    = "${local.oci_auth}"
+        OCI_CLI_PROFILE = "${local.oci_profile}"
+      }
     }
   }
   %{endif}
