@@ -6,7 +6,7 @@ neo4j:
   acceptLicenseAgreement: "no"
 
   resources:
-    cpu: "1500m"
+    cpu: "2000m"
     memory: "8Gi"
 
 volumes:

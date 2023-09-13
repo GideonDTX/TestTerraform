@@ -24,38 +24,24 @@ data "oci_containerengine_cluster_kube_config" "this" {
   cluster_id = var.cluster_id
 }
 
-# # this the correct provider when the VPN is in place
-# provider "kubernetes" {
-#   host                   = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.server
-#   cluster_ca_certificate = base64decode(yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.certificate-authority-data)
-#   exec {
-#     api_version = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.apiVersion
-#     command     = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.command
-#     args        = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.args
-#   }
-# }
-
-# this is the bastion configuration
 provider "kubernetes" {
-  config_path    = "~/.kube/config"
-  config_context = "${var.cluster_name}-bastion"
+  host                   = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.server
+  cluster_ca_certificate = base64decode(yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.certificate-authority-data)
+  exec {
+    api_version = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.apiVersion
+    command     = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.command
+    args        = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.args
+  }
 }
 
-# # this the correct provider when the VPN is in place
-# provider "kubectl" {
-#   host                   = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.server
-#   cluster_ca_certificate = base64decode(yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.certificate-authority-data)
-#   exec {
-#     api_version = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.apiVersion
-#     command     = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.command
-#     args        = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.args
-#   }
-# }
-
-# this is the bastion configuration
 provider "kubectl" {
-  config_path    = "~/.kube/config"
-  config_context = "${var.cluster_name}-bastion"
+  host                   = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.server
+  cluster_ca_certificate = base64decode(yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.certificate-authority-data)
+  exec {
+    api_version = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.apiVersion
+    command     = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.command
+    args        = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.args
+  }
 }
 
 data "kubectl_path_documents" "this" {

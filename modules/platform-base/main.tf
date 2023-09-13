@@ -61,72 +61,53 @@ data "oci_file_storage_export_sets" "this" {
   compartment_id      = var.compartment_id
 }
 
-# # oke
-# data "oci_containerengine_clusters" "this" {
-#   name           = var.cluster_name
-#   compartment_id = var.compartment_id
-#   state          = ["ACTIVE"]
-# }
-
-# # nodepools
-# data "oci_containerengine_node_pools" "this" {
-#   compartment_id = var.compartment_id
-#   cluster_id     = data.oci_containerengine_clusters.this.clusters[0].id
-#   state          = ["ACTIVE", "UPDATING"]
-# }
-
-# # kubeconf
-# data "oci_containerengine_cluster_kube_config" "this" {
-#   cluster_id = data.oci_containerengine_clusters.this.clusters[0].id
-# }
-
-# provider "kubernetes" {
-#   host                   = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.server
-#   cluster_ca_certificate = base64decode(yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.certificate-authority-data)
-#   exec {
-#     api_version = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.apiVersion
-#     command     = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.command
-#     args        = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.args
-#   }
-# }
-
-# this is the bastion configuration
-provider "kubernetes" {
-  config_path    = "~/.kube/config"
-  config_context = "${var.cluster_name}-bastion"
+# oke
+data "oci_containerengine_clusters" "this" {
+  name           = var.cluster_name
+  compartment_id = var.compartment_id
+  state          = ["ACTIVE"]
 }
 
-# provider "helm" {
-#   kubernetes {
-#     host                   = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.server
-#     cluster_ca_certificate = base64decode(yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.certificate-authority-data)
-#     exec {
-#       api_version = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.apiVersion
-#       command     = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.command
-#       args        = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.args
-#     }
-#   }
-# }
+# nodepools
+data "oci_containerengine_node_pools" "this" {
+  compartment_id = var.compartment_id
+  cluster_id     = data.oci_containerengine_clusters.this.clusters[0].id
+  state          = ["ACTIVE", "UPDATING"]
+}
 
-# this is the bastion configuration
-provider "helm" {
-  kubernetes {
-    config_path    = "~/.kube/config"
-    config_context = "${var.cluster_name}-bastion"
+# kubeconf
+data "oci_containerengine_cluster_kube_config" "this" {
+  cluster_id = data.oci_containerengine_clusters.this.clusters[0].id
+}
+
+provider "kubernetes" {
+  host                   = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.server
+  cluster_ca_certificate = base64decode(yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.certificate-authority-data)
+  exec {
+    api_version = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.apiVersion
+    command     = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.command
+    args        = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.args
   }
 }
 
-# provider "kubectl" {
-#   host                   = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.server
-#   cluster_ca_certificate = base64decode(yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.certificate-authority-data)
-#   exec {
-#     api_version = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.apiVersion
-#     command     = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.command
-#     args        = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.args
-#   }
-# }
+provider "helm" {
+  kubernetes {
+    host                   = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.server
+    cluster_ca_certificate = base64decode(yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.certificate-authority-data)
+    exec {
+      api_version = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.apiVersion
+      command     = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.command
+      args        = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.args
+    }
+  }
+}
 
 provider "kubectl" {
-  config_path    = "~/.kube/config"
-  config_context = "${var.cluster_name}-bastion"
+  host                   = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.server
+  cluster_ca_certificate = base64decode(yamldecode(data.oci_containerengine_cluster_kube_config.this.content).clusters[0].cluster.certificate-authority-data)
+  exec {
+    api_version = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.apiVersion
+    command     = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.command
+    args        = yamldecode(data.oci_containerengine_cluster_kube_config.this.content).users[0].user.exec.args
+  }
 }
