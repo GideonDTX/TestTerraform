@@ -1,6 +1,8 @@
 locals {
   region_vars = read_terragrunt_config(find_in_parent_folders("region.hcl"))
   env_vars    = read_terragrunt_config(find_in_parent_folders("env.hcl"))
+
+  version = "v4.4.25"
 }
 
 terraform {
@@ -38,7 +40,7 @@ dependencies {
 }
 
 inputs = {
-  helm_chart_version   = "v4.4.25"
+  helm_chart_version   = local.version
   compartment_id       = local.env_vars.locals.compartment_id
   compartment_name     = local.env_vars.locals.compartment_name
   cluster_id           = dependency.cluster.outputs.id

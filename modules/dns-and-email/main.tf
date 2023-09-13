@@ -1,11 +1,3 @@
-terraform {
-  required_providers {
-    oci = {
-      source = "oracle/oci"
-    }
-  }
-}
-
 # dns zone
 resource "oci_dns_zone" "this" {
   compartment_id = var.compartment_id
