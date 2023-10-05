@@ -293,6 +293,16 @@ inputs = {
       network_security_list_rules = concat([
         # ingress rules - neom vpn
         {
+          description = "Allow incoming from older neom vpn to ssh"
+          direction   = "ingress"
+          source      = local.region_vars.locals.neom_vpn_cidr
+          protocol    = local.tcp
+          tcp_options = {
+            min = 22
+            max = 22
+          }
+        },
+        {
           description = "Allow incoming from older neom vpn to k8s api"
           direction   = "ingress"
           source      = local.region_vars.locals.neom_vpn_cidr
@@ -303,6 +313,16 @@ inputs = {
           }
         },
         # ingress rules - neom cisco vpn
+        {
+          description = "Allow incoming from neom cisco vpn to ssh"
+          direction   = "ingress"
+          source      = local.region_vars.locals.neom_cisco_vpn_cidr
+          protocol    = local.tcp
+          tcp_options = {
+            min = 22
+            max = 22
+          }
+        },
         {
           description = "Allow incoming from neom cisco vpn to k8s api"
           direction   = "ingress"
@@ -490,6 +510,17 @@ inputs = {
       network_security_list_rules = concat([
         # ingress rules - neom vpn
         {
+          # incoming connections from older neom vpn subnet for ssh
+          description = "Allow incoming ssh from older neom vpn subnet"
+          direction   = "ingress"
+          source      = local.region_vars.locals.neom_vpn_cidr
+          protocol    = local.tcp
+          tcp_options = {
+            min = 22
+            max = 22
+          }
+        },
+        {
           # incoming connections from older neom vpn subnet for postgres pgbouncer
           description = "Allow incoming postgres pgbouncer from older neom vpn subnet"
           direction   = "ingress"
@@ -523,6 +554,17 @@ inputs = {
           }
         },
         # ingress rules - neom cisco vpn
+        {
+          # incoming connections from neom cisco vpn subnet for ssh
+          description = "Allow incoming ssh from neom cisco vpn subnet"
+          direction   = "ingress"
+          source      = local.region_vars.locals.neom_cisco_vpn_cidr
+          protocol    = local.tcp
+          tcp_options = {
+            min = 22
+            max = 22
+          }
+        },
         {
           # incoming connections from neom cisco vpn subnet for postgres pgbouncer
           description = "Allow incoming postgres pgbouncer from neom cisco vpn subnet"
