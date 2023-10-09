@@ -33,7 +33,7 @@ resource "oci_identity_tag" "scalegrid-dbprovider" {
 
 resource "oci_identity_policy" "scalegrid-compartment-policy" {
   compartment_id = var.compartment_id
-  name           = "${local.service_id.group}-compartment-policy"
+  name           = "${local.service_id.group}-scalegrid-compartment-policy"
   description    = "For ScaleGrid user profile ${var.cluster_name}"
 
   statements = [

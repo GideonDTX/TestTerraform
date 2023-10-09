@@ -50,6 +50,7 @@ locals {
   icmp     = "1"
   tcp      = "6"
   udp      = "17"
+  anyproto = "all"
 
   # icmp labels
   icmp_types = {
@@ -195,6 +196,13 @@ inputs = {
       network_security_list_rules = concat([
         # ingress rules
         {
+          # all connections between public subnet instances are allowed
+          description = "Allow all traffic between public subnet instances"
+          direction   = "ingress"
+          source      = local.public1_cidr
+          protocol    = local.anyproto
+        },
+        {
           # will be immediately redirected on load balancer to https
           description = "Allow incoming http from anywhere/Internet"
           direction   = "ingress"
@@ -217,6 +225,13 @@ inputs = {
           }
         },
         # egress rules
+        {
+          # all connections between public subnet instances are allowed
+          description = "Allow all traffic between public subnet instances"
+          direction   = "egress"
+          destination = local.public1_cidr
+          protocol    = local.anyproto
+        },
         {
           # outgoing connections from subnet to anywhere for dns for cert-manager
           description = "Allow outgoing dns/tcp to anywhere for cert-manager"
@@ -333,7 +348,14 @@ inputs = {
             max = 6443
           }
         },
-        # ingress rules
+        # ingress rules - internal
+        {
+          # all connections between application subnet instances are allowed
+          description = "Allow all traffic between application subnet instances"
+          direction   = "ingress"
+          source      = local.application1_cidr
+          protocol    = local.anyproto
+        },
         {
           # incoming acccess from load balancer to worker nodes on application subnet
           # https://docs.oracle.com/en-us/iaas/Content/ContEng/Concepts/contengnetworkconfig.htm#securitylistconfig__security_rules_for_load_balancers
@@ -358,7 +380,14 @@ inputs = {
             max = 10256
           }
         },
-        # egress
+        # egress - internal
+        {
+          # all connections between application subnet instances are allowed
+          description = "Allow all traffic between application subnet instances"
+          direction   = "egress"
+          destination = local.application1_cidr
+          protocol    = local.anyproto
+        },
         {
           # outgoing connections from subnet for DataSource, ObjectModelAPI, and Script Services
           description = "Allow outgoing https to anywhere/Internet"
@@ -600,6 +629,13 @@ inputs = {
         },
         # ingress rules - internal
         {
+          # all connections between data subnet instances are allowed
+          description = "Allow all traffic between data subnet instances"
+          direction   = "ingress"
+          source      = local.data1_cidr
+          protocol    = local.anyproto
+        },
+        {
           # incoming connections from application subnet for postgres pgbouncer
           description = "Allow incoming postgres pgbouncer from application subnet"
           direction   = "ingress"
@@ -688,6 +724,13 @@ inputs = {
           }
         },
         # egress rules
+        {
+          # all connections between data subnet instances are allowed
+          description = "Allow all traffic between data subnet instances"
+          direction   = "egress"
+          destination = local.data1_cidr
+          protocol    = local.anyproto
+        },
         {
           # this is primarily for ScaleGrid per requirements: https://help.scalegrid.io/docs/prerequisites
           description = "Allow outgoing http to anywhere"
