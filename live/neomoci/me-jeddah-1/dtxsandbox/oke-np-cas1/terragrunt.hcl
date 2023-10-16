@@ -9,7 +9,6 @@ locals {
 
   shape = "VM.Standard3.Flex"
 
-  #
   # NOTE: We used to lookup the image from the name but Oracle removes old images
   #       so fast that it breaks the existing state when it can't look up the old
   #       image id. Now we just explicitly provide the id. You can find image ids
@@ -17,11 +16,21 @@ locals {
   #
   #       oci ce node-pool-options get --node-pool-option-id all
   #
+  #       Full Example:
+  #
+  #       1. Only show OKE format (includes Kubernetes software ... MATCH VERSIONS!)
+  #       2. Exclude GPU
+  #       3. Exclude arm64 nodes
+  #
+  #       oci ce node-pool-options get --node-pool-option-id all | \
+  #         jq -r '.data.sources[] | ."source-name" + " " + ."image-id"' | \
+  #         grep -- "-OKE-" | \
+  #         grep -v -- "-GPU-" | \
+  #         grep -v -- "-aarch64-"
+  #
 
-  # ID for Oracle-Linux-8.8-2023.06.30-0-OKE-1.26.2-632
-  # NOTE: OKE images boot up faster because they already have the kube components installed
-  #       As such, choose an image that matches your kubernetes version
-  image_id  = "ocid1.image.oc1.me-jeddah-1.aaaaaaaav2eia7qmlzxb2a2gxgxwq5dcazd66cfpnl2pqus4rxkbzxc2ohhq"
+  # id for Oracle-Linux-8.8-2023.08.31-0-OKE-1.26.2-645
+  image_id  = "ocid1.image.oc1.me-jeddah-1.aaaaaaaaelsybrvo576gzkrid3fbbphrdnrbldcz5hx3fng5ncofs64mfdkq"
 
   # note cpu/memory values must be valid ratios (check documentation)
   cpu    = 4

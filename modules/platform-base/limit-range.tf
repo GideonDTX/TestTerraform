@@ -6,7 +6,7 @@ resource "kubernetes_limit_range_v1" "this" {
   spec {
     limit {
       type = "Container"
-      default = {
+      default_request = {
         cpu               = "100m"
         memory            = "32Mi"
         ephemeral-storage = "64Mi"
