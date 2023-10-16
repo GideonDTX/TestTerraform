@@ -5,6 +5,18 @@ data "oci_identity_availability_domains" "this" {
   compartment_id = var.compartment_id
 }
 
+# cloud-init for workers
+data "cloudinit_config" "this" {
+  gzip          = false
+  base64_encode = true
+
+  part {
+    filename     = "worker.sh"
+    content_type = "text/x-shellscript"
+    content      = templatefile("${path.module}/templates/worker.sh", {})
+  }
+}
+
 # nodepool
 resource "oci_containerengine_node_pool" "this" {
   lifecycle {
@@ -18,6 +30,10 @@ resource "oci_containerengine_node_pool" "this" {
   cluster_id     = var.cluster_id
 
   kubernetes_version = var.kubernetes_version
+
+  node_metadata = {
+    user_data = data.cloudinit_config.this.rendered
+  }
 
   node_config_details {
     size = var.min_size
