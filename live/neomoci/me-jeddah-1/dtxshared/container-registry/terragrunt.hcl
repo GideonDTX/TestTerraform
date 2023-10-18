@@ -67,6 +67,9 @@ inputs = {
       name = "dtx/filesvc-migrations",
     },
     {
+      name = "dtx/ipaplugins",
+    },
+    {
       name = "dtx/itemsvc",
     },
     {
@@ -95,6 +98,18 @@ inputs = {
     },
     {
       name = "dtx/passportsvc-migrations",
+    },
+    {
+      name = "dtx/platformiamsvc",
+    },
+    {
+      name = "dtx/platformiamsvc-migrations",
+    },
+    {
+      name = "dtx/platform-console-app",
+    },
+    {
+      name = "dtx/platform-reference-app",
     },
     {
       name = "dtx/graphicssvc",
