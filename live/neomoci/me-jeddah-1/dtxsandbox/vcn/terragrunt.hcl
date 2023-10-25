@@ -411,6 +411,17 @@ inputs = {
           }
         },
         {
+          # outgoing connections from subnet to data for postgres direct
+          description = "Allow outgoing postgres direct to data subnet"
+          direction   = "egress"
+          destination = local.data1_cidr
+          protocol    = local.tcp
+          tcp_options = {
+            min = 5432
+            max = 5432
+          }
+        },
+        {
           # outgoing connections from subnet to data for postgres pgbouncer
           description = "Allow outgoing postgres pgbouncer to data subnet"
           direction   = "egress"
@@ -550,6 +561,17 @@ inputs = {
           }
         },
         {
+          # incoming connections from older neom vpn subnet for postgres direct
+          description = "Allow incoming postgres direct from older neom vpn subnet"
+          direction   = "ingress"
+          source      = local.region_vars.locals.neom_vpn_cidr
+          protocol    = local.tcp
+          tcp_options = {
+            min = 5432
+            max = 5432
+          }
+        },
+        {
           # incoming connections from older neom vpn subnet for postgres pgbouncer
           description = "Allow incoming postgres pgbouncer from older neom vpn subnet"
           direction   = "ingress"
@@ -595,6 +617,17 @@ inputs = {
           }
         },
         {
+          # incoming connections from neom cisco vpn subnet for postgres direct
+          description = "Allow incoming postgres direct from neom cisco vpn subnet"
+          direction   = "ingress"
+          source      = local.region_vars.locals.neom_cisco_vpn_cidr
+          protocol    = local.tcp
+          tcp_options = {
+            min = 5432
+            max = 5432
+          }
+        },
+        {
           # incoming connections from neom cisco vpn subnet for postgres pgbouncer
           description = "Allow incoming postgres pgbouncer from neom cisco vpn subnet"
           direction   = "ingress"
@@ -634,6 +667,17 @@ inputs = {
           direction   = "ingress"
           source      = local.data1_cidr
           protocol    = local.anyproto
+        },
+        {
+          # incoming connections from application subnet for postgres direct
+          description = "Allow incoming postgres direct from application subnet"
+          direction   = "ingress"
+          source      = local.application1_cidr
+          protocol    = local.tcp
+          tcp_options = {
+            min = 5432
+            max = 5432
+          }
         },
         {
           # incoming connections from application subnet for postgres pgbouncer
