@@ -41,7 +41,7 @@ resource "kubernetes_persistent_volume" "graphicssvc" {
 
     persistent_volume_source  {
       nfs {
-        server    = "fss1.prv1.${var.cluster_name}.oraclevcn.com"
+        server    = "fss1.data1.${var.cluster_name}.oraclevcn.com"
         path      = "/${var.kubernetes_namespace}-graphicssvc"
         read_only = false
       }
