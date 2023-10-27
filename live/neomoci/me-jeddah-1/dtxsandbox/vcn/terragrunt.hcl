@@ -9,12 +9,14 @@ locals {
   data1_cidr        = "10.149.96.96/27"
 
   # enable bastion only when needed (for emergencies, vpn outages, etc.)
-  bastion_enabled     = true
+  bastion_enabled     = false
   bastion_permit_cidr = {
-    Harlan_Barnes = "73.7.139.22/32"
+    # Example:
+    # Harlan_Barnes = "73.7.139.22/32"
   }
   bastion_private_ports = {
-    kubernetes_api = 6443
+    # Example:
+    # kubernetes_api = 6443
   }
   # Oracle Automous Linux 8.8
   bastion_image_id = "ocid1.image.oc1.me-jeddah-1.aaaaaaaaueynum7iew5v7huc5ji6fgjmpi2tugcrlgcnrdrzqtwwwwy2b25a"
