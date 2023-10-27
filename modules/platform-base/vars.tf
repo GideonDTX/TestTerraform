@@ -23,11 +23,6 @@ variable "vcn_id" {
   type        = string
 }
 
-variable "cluster_id" {
-  description = "The id of the OKE cluster"
-  type        = string
-}
-
 variable "cluster_name" {
   description = "The name of the OKE cluster"
   type        = string
@@ -53,3 +48,7 @@ variable "dns_names" {
   type        = map(string)
 }
 
+variable "cert_files" {
+  description = "Map of cert files"
+  type        = map(string)
+}

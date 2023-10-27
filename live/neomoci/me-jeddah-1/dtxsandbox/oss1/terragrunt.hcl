@@ -64,7 +64,6 @@ inputs = {
   compartment_id       = local.env_vars.locals.compartment_id
   compartment_name     = local.env_vars.locals.compartment_name
   vcn_id               = dependency.vcn.outputs.id
-  cluster_id           = dependency.cluster.outputs.id
   cluster_name         = dependency.cluster.outputs.name
   kubernetes_namespace = dependency.cluster.outputs.name
   subnet_id            = dependency.vcn.outputs.subnets["data1"].id

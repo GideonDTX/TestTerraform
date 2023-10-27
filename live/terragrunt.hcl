@@ -45,9 +45,15 @@ provider "oci" {
 }
 
 %{~ if contains(keys(local.providers), "kubernetes") || contains(keys(local.providers), "helm") || contains(keys(local.providers), "kubectl") ~}
+data "oci_containerengine_clusters" "this" {
+  name           = "${local.environment_vars.locals.cluster_name}"
+  compartment_id = "${local.environment_vars.locals.compartment_id}"
+  state          = ["ACTIVE"]
+}
+
 # get kubeconf for kubernetes, helm, and kubectl
 data "oci_containerengine_cluster_kube_config" "this" {
-  cluster_id = var.cluster_id
+  cluster_id =  data.oci_containerengine_clusters.this.clusters[0].id
 }
 
 %{~ endif ~}
@@ -100,6 +106,17 @@ provider "kubectl" {
       OCI_CLI_AUTH    = "${local.oci_auth}"
       OCI_CLI_PROFILE = "${local.oci_profile}"
     }
+  }
+}
+
+%{~ endif ~}
+%{~ if contains(keys(local.providers), "aws") ~}
+# configure aws for platform deployment configuration files
+provider "aws" {
+  alias  = "home"
+  region = "us-west-2"
+  assume_role {
+    role_arn = "arn:aws:iam::550983980260:role/ProductionUsers"
   }
 }
 %{~ endif ~}

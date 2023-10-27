@@ -43,7 +43,6 @@ inputs = {
   region           = local.region_vars.locals.region
   compartment_id   = local.env_vars.locals.compartment_id
   compartment_name = local.env_vars.locals.compartment_name
-  cluster_id       = dependency.cluster.outputs.id
   cluster_name     = dependency.cluster.outputs.name
   calico_version   = local.calico_version
 }

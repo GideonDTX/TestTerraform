@@ -1,14 +1,10 @@
-# resource "kubernetes_secret_v1" "certs" {
-#   metadata {
-#     name      = "certs"
-#     namespace = var.env_name
-#   }
+resource "kubernetes_secret_v1" "certs" {
+  metadata {
+    name      = "certs"
+    namespace = var.kubernetes_namespace
+  }
 
-#   type = "Opaque"
+  type = "Opaque"
 
-#   data = {
-#     "dtxnonprodmongodb1.crt" = <<-EOT
-#     # insert public cert here
-#     EOT
-#   }
-# }
+  data = var.cert_files
+}

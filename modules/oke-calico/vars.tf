@@ -8,11 +8,6 @@ variable "compartment_id" {
   type        = string
 }
 
-variable "cluster_id" {
-  description = "The id of the cluster"
-  type        = string
-}
-
 variable "cluster_name" {
   description = "The name of the cluster"
   type        = string
