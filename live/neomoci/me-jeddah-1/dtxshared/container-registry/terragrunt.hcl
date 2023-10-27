@@ -147,5 +147,19 @@ inputs = {
     {
       name = "dtx/eventtransformsvc",
     },
+    ### Images for TwinitDevVSCodeExt
+    {
+      name = "dtx/twinit-dev-vscode-ext",
+    },
+    ### Images for DevPotal
+    {
+      name = "dtx/dev-portal-mirrana",
+    },
+    {
+      name = "dtx/npm-registry",
+    },
+    {
+      name = "dtx/dev-access-mgmt",
+    },
   ]
 }
