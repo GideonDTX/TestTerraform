@@ -3,10 +3,10 @@ locals {
   env_vars    = read_terragrunt_config(find_in_parent_folders("env.hcl"))
 
   # cidr blocks
-  vcn_cidr          = "10.149.96.0/25"
-  public1_cidr      = "10.149.96.64/27"
-  application1_cidr = "10.149.96.0/26"
-  data1_cidr        = "10.149.96.96/27"
+  vcn_cidr          = "10.0.0.0/16"
+  public1_cidr      = "10.0.0.64/18"
+  application1_cidr = "10.0.0.0/17"
+  data1_cidr        = "10.0.0.96/18"
 
   # enable bastion only when needed (for emergencies, vpn outages, etc.)
   bastion_enabled     = false
