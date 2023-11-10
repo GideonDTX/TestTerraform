@@ -1,5 +1,5 @@
 locals {
-  environment           = "dtxDev"
+  environment           = "dtxDev1"
   compartment_name      = "DTX_PaaS-Dev"
   compartment_id        = "ocid1.compartment.oc1..aaaaaaaaimjp3jzwblxkr2ptywfbb6zqt7k4ykvluue6g37gqiedf6yd5sqq"
   shared_compartment_id = "ocid1.compartment.oc1..aaaaaaaaelhj7c2mf6thajka6uhgccy6ps7j5a2nssvzrvpul3ypaodavflq"
