@@ -18,24 +18,24 @@ locals {
 }
 
 # it feels like I could make this smarter
-generate "provider" {
-  path      = "provider.tf"
-  if_exists = "overwrite_terragrunt"
-
+#generate "provider" {
+#  path      = "provider.tf"
+#  if_exists = "overwrite_terragrunt"
+#
   # we have to do these conditionals because of the multiple accounts
-  contents = <<EOF
+#  contents = <<EOF
 # dyanmically set providers
-terraform {
-  required_providers {
-    %{~ for name, obj in local.providers ~}
-    ${name} = {
-    %{~ for key in keys(obj) ~}
-      ${key} = "${obj[key]}"
-    %{~ endfor ~}
-    }
-    %{~ endfor ~}
-  }
-}
+#terraform {
+#  required_providers {
+#    %{~ for name, obj in local.providers ~}
+#    ${name} = {
+#    %{~ for key in keys(obj) ~}
+#      ${key} = "${obj[key]}"
+#    %{~ endfor ~}
+#    }
+#    %{~ endfor ~}
+#  }
+#}
 
 # main provider for oci
 provider "oci" {
@@ -110,6 +110,48 @@ provider "kubectl" {
 }
 
 %{~ endif ~}
+%{~ if contains(keys(local.providers), "aws") ~}
+# configure aws for platform deployment configuration files
+provider "aws" {
+  alias  = "home"
+  region = "us-west-2"
+  assume_role {
+    role_arn = "arn:aws:iam::550983980260:role/ProductionUsers"
+  }
+}
+%{~ endif ~}
 EOF
 }
 
+#remote_state {
+#  backend = "s3"
+
+#  generate = {
+#    path      = "backend.tf"
+#    if_exists = "overwrite_terragrunt"
+#  }
+
+#  config = {
+#    bucket   = "dtx-terraform"
+#    key      = "${path_relative_to_include()}/terraform.tfstate"
+#    region   = "me-jeddah-1"
+#    endpoint = "https://axnfm4jb3i73.compat.objectstorage.me-jeddah-1.oraclecloud.com"
+
+#    profile = "neomoci"
+
+#    skip_region_validation      = true
+#    skip_credentials_validation = true
+#    skip_metadata_api_check     = true
+#    force_path_style            = true
+
+    # use these to avoid terragrunt warnings with OCI Object Storage Buckets
+#    skip_bucket_versioning             = true
+#    skip_bucket_ssencryption           = true
+#    skip_bucket_root_access            = true
+#    skip_bucket_enforced_tls           = true
+#    skip_bucket_public_access_blocking = true
+
+    # not needed because of skip_bucket_ssencryption but terragrunt warns anyway
+#    encrypt = true
+#  }
+#}

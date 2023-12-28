@@ -3,13 +3,13 @@ locals {
   env_vars    = read_terragrunt_config(find_in_parent_folders("env.hcl"))
 
   # cidr blocks
-  vcn_cidr          = "10.0.0.0/16"
-  public1_cidr      = "10.0.0.64/18"
-  application1_cidr = "10.0.0.0/17"
-  data1_cidr        = "10.0.0.96/18"
+  vcn_cidr          = "10.2.0.0/16" # Adjusted CIDR for the entire VCN
+  public1_cidr      = "10.2.1.0/24" # Adjusted CIDR for public1 subnet
+  application1_cidr = "10.2.2.0/24" # Adjusted CIDR for application1 subnet
+  data1_cidr        = "10.2.3.0/24" # Adjusted CIDR for data1 subnet
 
   # enable bastion only when needed (for emergencies, vpn outages, etc.)
-  bastion_enabled     = false
+  bastion_enabled = false
   bastion_permit_cidr = {
     # Example:
     # Harlan_Barnes = "73.7.139.22/32"
@@ -65,94 +65,46 @@ locals {
 
   # these repeat in lots of places so we set these as local variables
   ingress_icmp = [
-      {
-        description = "Allow incoming icmp echo-reply from anywhere"
-        direction   = "ingress"
-        source      = local.anywhere
-        protocol    = local.icmp
-        icmp_options = {
-          type = local.icmp_types.echo_reply
-        }
-      },
-      {
-        description = "Allow incoming icmp dest-unreachable from anywhere"
-        direction   = "ingress"
-        source      = local.anywhere
-        protocol    = local.icmp
-        icmp_options = {
-          type = local.icmp_types.dest_unreach
-        }
-      },
-      {
-        description = "Allow incoming icmp source quench from anywhere"
-        direction   = "ingress"
-        source      = local.anywhere
-        protocol    = local.icmp
-        icmp_options = {
-          type = local.icmp_types.source_quench
-        }
-      },
-      {
-        description = "Allow incoming icmp echo-request from anywhere"
-        direction   = "ingress"
-        source      = local.anywhere
-        protocol    = local.icmp
-        icmp_options = {
-          type = local.icmp_types.echo_request
-        }
-      },
-      {
-        description = "Allow incoming icmp time-exceeded from anywhere"
-        direction   = "ingress"
-        source      = local.anywhere
-        protocol    = local.icmp
-        icmp_options = {
-          type = local.icmp_types.time_exceeded
-        }
-      },
-  ]
-
-  egress_icmp = [
     {
-      description = "Allow outgoing icmp echo-reply from anywhere"
-      direction   = "egress"
-      destination = local.anywhere
+      description = "Allow incoming icmp echo-reply from anywhere"
+      direction   = "ingress"
+      source      = local.anywhere
       protocol    = local.icmp
       icmp_options = {
         type = local.icmp_types.echo_reply
       }
     },
     {
-      description = "Allow outgoing icmp dest-unreachable from anywhere"
-      direction   = "egress"
-      destination = local.anywhere
+      description = "Allow incoming icmp dest-unreachable from anywhere"
+      direction   = "ingress"
+      source      = local.anywhere
       protocol    = local.icmp
       icmp_options = {
         type = local.icmp_types.dest_unreach
       }
     },
     {
-      description = "Allow outgoing icmp source quench from anywhere"
-      direction   = "egress"
-      destination = local.anywhere
+      description = "Allow incoming icmp source quench from anywhere"
+      direction   = "ingress"
+      source      = local.anywhere
       protocol    = local.icmp
       icmp_options = {
         type = local.icmp_types.source_quench
       }
     },
     {
-      description = "Allow outgoing icmp echo-request from anywhere"
-      direction   = "egress"
-      destination = local.anywhere
+      description = "Allow incoming icmp echo-request from anywhere"
+      direction   = "ingress"
+      source      = local.anywhere
       protocol    = local.icmp
       icmp_options = {
         type = local.icmp_types.echo_request
       }
     },
     {
-      description = "Allow outgoing icmp time-exceeded from anywhere"
-      direction   = "egress"
-      destination = local.anywhere
+      description = "Allow incoming icmp time-exceeded from anywhere"
+      direction   = "ingress"
+      source      = local.anywhere
       protocol    = local.icmp
       icmp_options = {
         type = local.icmp_types.time_exceeded
@@ -194,83 +146,6 @@ inputs = {
           network_entity_id = "INTERNET_GATEWAY"
         }
       ]
-
-      network_security_list_rules = concat([
-        # ingress rules
-        {
-          # all connections between public subnet instances are allowed
-          description = "Allow all traffic between public subnet instances"
-          direction   = "ingress"
-          source      = local.public1_cidr
-          protocol    = local.anyproto
-        },
-        {
-          # will be immediately redirected on load balancer to https
-          description = "Allow incoming http from anywhere/Internet"
-          direction   = "ingress"
-          source      = local.anywhere
-          protocol    = local.tcp
-          tcp_options = {
-            min = 80
-            max = 80
-          }
-        },
-        {
-          # will be directed to load balancer
-          description = "Allow incoming https from anywhere/Internet"
-          direction   = "ingress"
-          source      = local.anywhere
-          protocol    = local.tcp
-          tcp_options = {
-            min = 443
-            max = 443
-          }
-        },
-        # egress rules
-        {
-          # all connections between public subnet instances are allowed
-          description = "Allow all traffic between public subnet instances"
-          direction   = "egress"
-          destination = local.public1_cidr
-          protocol    = local.anyproto
-        },
-        {
-          # outgoing connections from subnet to anywhere for dns for cert-manager
-          description = "Allow outgoing dns/tcp to anywhere for cert-manager"
-          direction   = "egress"
-          destination = local.anywhere
-          protocol    = local.tcp
-          tcp_options = {
-            min = 53
-            max = 53
-          }
-        },
-        {
-          # for acccess from load balancer to worker nodes on application subnet
-          # https://docs.oracle.com/en-us/iaas/Content/ContEng/Concepts/contengnetworkconfig.htm#securitylistconfig__security_rules_for_load_balancers
-          description = "Allow outgoing from load balancer to k8s worker node subnet"
-          direction   = "egress"
-          destination = local.application1_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 30000
-            max = 32767
-          }
-        },
-        {
-          # for acccess from load balancer to worker nodes on application subnet to kube-proxy
-          # https://docs.oracle.com/en-us/iaas/Content/ContEng/Concepts/contengnetworkconfig.htm#securitylistconfig__security_rules_for_load_balancers
-          description = "Allow outgoing from load balancer to k8s worker node subnet to kube-proxy"
-          direction   = "egress"
-          destination = local.application1_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 10256
-            max = 10256
-          }
-        },
-      ],
-      local.ingress_icmp, local.egress_icmp, local.bastion_public)
     }
 
     application1 = {
@@ -286,233 +161,26 @@ inputs = {
           destination       = "0.0.0.0/0"
           destination_type  = "CIDR_BLOCK"
           network_entity_id = "NAT_GATEWAY"
-        },
-        {
-          description       = "CISCO_VPN"
-          destination       = local.region_vars.locals.neom_cisco_vpn_cidr
-          destination_type  = "CIDR_BLOCK"
-          network_entity_id = local.region_vars.locals.neom_vpn_drg_id
-        },
-        {
+       },
+       {
           description       = "VPN"
-          destination       = local.region_vars.locals.neom_vpn_cidr
+          destination       = "10.99.16.0/20"
           destination_type  = "CIDR_BLOCK"
-          network_entity_id = local.region_vars.locals.neom_vpn_drg_id
+          network_entity_id = "ocid1.drg.oc1.me-jeddah-1.aaaaaaaaaicnyajetykbzoia5faqcxbohqs65lr2hbzpri5sevlmy27abeyq"
+        },
+       {
+          description       = "CISCO_VPN"
+          destination       = "10.98.0.0/24"
+          destination_type  = "CIDR_BLOCK"
+          network_entity_id = "ocid1.drg.oc1.me-jeddah-1.aaaaaaaaaicnyajetykbzoia5faqcxbohqs65lr2hbzpri5sevlmy27abeyq"
         },
         {
           description       = "All subnets route Oracle services through service gateway"
-          destination       = "SERVICE_CIDR_BLOCK"
-          destination_type  = "SERVICE_CIDR_BLOCK"
-          network_entity_id = "SERVICE_GATEWAY"
-        },
+          destination       = "all-jed-services-in-oracle-services-network" 
+          destination_type  = "SERVICE_CIDR_BLOCK" 
+          network_entity_id = "ocid1.servicegateway.oc1.me-jeddah-1.aaaaaaaatnpd2hzb45z4dfhklg52nky5mx4dvl77kxpdevvvjyh5eg64jdtq" 
+        }
       ]
-
-      network_security_list_rules = concat([
-        # ingress rules - neom vpn
-        {
-          description = "Allow incoming from older neom vpn to ssh"
-          direction   = "ingress"
-          source      = local.region_vars.locals.neom_vpn_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 22
-            max = 22
-          }
-        },
-        {
-          description = "Allow incoming from older neom vpn to k8s api"
-          direction   = "ingress"
-          source      = local.region_vars.locals.neom_vpn_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 6443
-            max = 6443
-          }
-        },
-        # ingress rules - neom cisco vpn
-        {
-          description = "Allow incoming from neom cisco vpn to ssh"
-          direction   = "ingress"
-          source      = local.region_vars.locals.neom_cisco_vpn_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 22
-            max = 22
-          }
-        },
-        {
-          description = "Allow incoming from neom cisco vpn to k8s api"
-          direction   = "ingress"
-          source      = local.region_vars.locals.neom_cisco_vpn_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 6443
-            max = 6443
-          }
-        },
-        # ingress rules - internal
-        {
-          # all connections between application subnet instances are allowed
-          description = "Allow all traffic between application subnet instances"
-          direction   = "ingress"
-          source      = local.application1_cidr
-          protocol    = local.anyproto
-        },
-        {
-          # incoming acccess from load balancer to worker nodes on application subnet
-          # https://docs.oracle.com/en-us/iaas/Content/ContEng/Concepts/contengnetworkconfig.htm#securitylistconfig__security_rules_for_load_balancers
-          description = "Allow incoming from load balancer to k8s worker node subnet"
-          direction   = "ingress"
-          source      = local.public1_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 30000
-            max = 32767
-          }
-        },
-        {
-          # incoming acccess from load balancer to worker nodes on application subnet to kube-proxy
-          # https://docs.oracle.com/en-us/iaas/Content/ContEng/Concepts/contengnetworkconfig.htm#securitylistconfig__security_rules_for_load_balancers
-          description = "Allow incoming from load balancer to k8s worker node subnet to kube-proxy"
-          direction   = "ingress"
-          source      = local.public1_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 10256
-            max = 10256
-          }
-        },
-        # egress - internal
-        {
-          # all connections between application subnet instances are allowed
-          description = "Allow all traffic between application subnet instances"
-          direction   = "egress"
-          destination = local.application1_cidr
-          protocol    = local.anyproto
-        },
-        {
-          # outgoing connections from subnet for DataSource, ObjectModelAPI, and Script Services
-          description = "Allow outgoing https to anywhere/Internet"
-          direction   = "egress"
-          destination = local.anywhere
-          protocol    = local.tcp
-          tcp_options = {
-            min = 443
-            max = 443
-          }
-        },
-        {
-          # outgoing connections from subnet to anywhere for dns for cert-manager
-          description = "Allow outgoing dns/tcp to anywhere for cert-manager"
-          direction   = "egress"
-          destination = local.anywhere
-          protocol    = local.tcp
-          tcp_options = {
-            min = 53
-            max = 53
-          }
-        },
-        {
-          # outgoing connections from subnet to data for postgres direct
-          description = "Allow outgoing postgres direct to data subnet"
-          direction   = "egress"
-          destination = local.data1_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 5432
-            max = 5432
-          }
-        },
-        {
-          # outgoing connections from subnet to data for postgres pgbouncer
-          description = "Allow outgoing postgres pgbouncer to data subnet"
-          direction   = "egress"
-          destination = local.data1_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 6432
-            max = 6432
-          }
-        },
-        {
-          # outgoing connections from subnet to data for redis
-          description = "Allow outgoing redis to data subnet"
-          direction   = "egress"
-          destination = local.data1_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 6379
-            max = 6379
-          }
-        },
-        {
-          # outgoing connections from subnet to data for mongodb
-          description = "Allow outgoing mongodb to data subnet"
-          direction   = "egress"
-          destination = local.data1_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 27017
-            max = 27017
-          }
-        },
-        {
-          # outgoing connections from subnet to data for sunrpc/tcp (for nfs)
-          description = "Allow outgoing sunrpc/tcp to data subnet (for nfs)"
-          direction   = "egress"
-          destination = local.data1_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 111
-            max = 111
-          }
-        },
-        {
-          # outgoing connections from subnet to data for nfs/tcp
-          description = "Allow outgoing nfs/tcp to data subnet"
-          direction   = "egress"
-          destination = local.data1_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 2048
-            max = 2050
-          }
-        },
-        {
-          # outgoing connections from subnet to data for sunrpc/udp (for nfs)
-          description = "Allow outgoing sunrpc/udp to data subnet (for nfs)"
-          direction   = "egress"
-          destination = local.data1_cidr
-          protocol    = local.udp
-          udp_options = {
-            min = 111
-            max = 111
-          }
-        },
-        {
-          # outgoing connections from subnet to data for nfs/udp
-          description = "Allow outgoing nfs/udp to data subnet"
-          direction   = "egress"
-          destination = local.data1_cidr
-          protocol    = local.udp
-          udp_options = {
-            min = 2048
-            max = 2048
-          }
-        },
-        {
-          # outgoing connections from subnet to data for kafka/tcp
-          description = "Allow outgoing kafka/tcp to data subnet"
-          direction   = "egress"
-          destination = local.data1_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 9092
-            max = 9092
-          }
-        },
-      ],
-      local.ingress_icmp, local.egress_icmp, local.bastion_private)
     }
 
     data1 = {
@@ -530,288 +198,26 @@ inputs = {
           network_entity_id = "NAT_GATEWAY"
         },
         {
-          description       = "C_VPN"
-          destination       = local.region_vars.locals.neom_cisco_vpn_cidr
-          destination_type  = "CIDR_BLOCK"
-          network_entity_id = local.region_vars.locals.neom_vpn_drg_id
+          description       = "All subnets route Oracle services through service gateway" 
+          destination       = "all-jed-services-in-oracle-services-network" 
+          destination_type  = "SERVICE_CIDR_BLOCK" 
+          network_entity_id = "ocid1.servicegateway.oc1.me-jeddah-1.aaaaaaaatnpd2hzb45z4dfhklg52nky5mx4dvl77kxpdevvvjyh5eg64jdtq" 
         },
         {
-          description       = "VPN"
-          destination       = local.region_vars.locals.neom_vpn_cidr
-          destination_type  = "CIDR_BLOCK"
-          network_entity_id = local.region_vars.locals.neom_vpn_drg_id
+          description       = "C_VPN" 
+          destination       = "10.98.0.0/16" 
+          destination_type  = "CIDR_BLOCK" 
+          network_entity_id = "ocid1.drg.oc1.me-jeddah-1.aaaaaaaaaicnyajetykbzoia5faqcxbohqs65lr2hbzpri5sevlmy27abeyq" 
         },
         {
-          description       = "All subnets route Oracle services through service gateway"
-          destination       = "SERVICE_CIDR_BLOCK"
-          destination_type  = "SERVICE_CIDR_BLOCK"
-          network_entity_id = "SERVICE_GATEWAY"
-        },
-      ]
-
-      network_security_list_rules = concat([
-        # ingress rules - neom vpn
-        {
-          # incoming connections from older neom vpn subnet for ssh
-          description = "Allow incoming ssh from older neom vpn subnet"
-          direction   = "ingress"
-          source      = local.region_vars.locals.neom_vpn_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 22
-            max = 22
-          }
-        },
-        {
-          # incoming connections from older neom vpn subnet for postgres direct
-          description = "Allow incoming postgres direct from older neom vpn subnet"
-          direction   = "ingress"
-          source      = local.region_vars.locals.neom_vpn_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 5432
-            max = 5432
-          }
-        },
-        {
-          # incoming connections from older neom vpn subnet for postgres pgbouncer
-          description = "Allow incoming postgres pgbouncer from older neom vpn subnet"
-          direction   = "ingress"
-          source      = local.region_vars.locals.neom_vpn_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 6432
-            max = 6432
-          }
-        },
-        {
-          # incoming connections from older neom vpn subnet for redis
-          description = "Allow incoming redis from older neom vpn subnet"
-          direction   = "ingress"
-          source      = local.region_vars.locals.neom_vpn_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 6379
-            max = 6379
-          }
-        },
-        {
-          # incoming connections from older neom vpn subnet for mongodb
-          description = "Allow incoming mongodb from older neom vpn subnet"
-          direction   = "ingress"
-          source      = local.region_vars.locals.neom_vpn_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 27017
-            max = 27017
-          }
-        },
-        # ingress rules - neom cisco vpn
-        {
-          # incoming connections from neom cisco vpn subnet for ssh
-          description = "Allow incoming ssh from neom cisco vpn subnet"
-          direction   = "ingress"
-          source      = local.region_vars.locals.neom_cisco_vpn_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 22
-            max = 22
-          }
-        },
-        {
-          # incoming connections from neom cisco vpn subnet for postgres direct
-          description = "Allow incoming postgres direct from neom cisco vpn subnet"
-          direction   = "ingress"
-          source      = local.region_vars.locals.neom_cisco_vpn_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 5432
-            max = 5432
-          }
-        },
-        {
-          # incoming connections from neom cisco vpn subnet for postgres pgbouncer
-          description = "Allow incoming postgres pgbouncer from neom cisco vpn subnet"
-          direction   = "ingress"
-          source      = local.region_vars.locals.neom_cisco_vpn_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 6432
-            max = 6432
-          }
-        },
-        {
-          # incoming connections from neom cisco vpn subnet for redis
-          description = "Allow incoming redis from neom cisco vpn subnet"
-          direction   = "ingress"
-          source      = local.region_vars.locals.neom_cisco_vpn_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 6379
-            max = 6379
-          }
-        },
-        {
-          # incoming connections from neom cisco vpn subnet for mongodb
-          description = "Allow incoming mongodb from neom cisco vpn subnet"
-          direction   = "ingress"
-          source      = local.region_vars.locals.neom_cisco_vpn_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 27017
-            max = 27017
-          }
-        },
-        # ingress rules - internal
-        {
-          # all connections between data subnet instances are allowed
-          description = "Allow all traffic between data subnet instances"
-          direction   = "ingress"
-          source      = local.data1_cidr
-          protocol    = local.anyproto
-        },
-        {
-          # incoming connections from application subnet for postgres direct
-          description = "Allow incoming postgres direct from application subnet"
-          direction   = "ingress"
-          source      = local.application1_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 5432
-            max = 5432
-          }
-        },
-        {
-          # incoming connections from application subnet for postgres pgbouncer
-          description = "Allow incoming postgres pgbouncer from application subnet"
-          direction   = "ingress"
-          source      = local.application1_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 6432
-            max = 6432
-          }
-        },
-        {
-          # incoming connections from application subnet for redis
-          description = "Allow incoming redis from application subnet"
-          direction   = "ingress"
-          source      = local.application1_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 6379
-            max = 6379
-          }
-        },
-        {
-          # incoming connections from application subnet for mongodb
-          description = "Allow incoming mongodb from application subnet"
-          direction   = "ingress"
-          source      = local.application1_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 27017
-            max = 27017
-          }
-        },
-        {
-          # incoming connections from application subnet for sunrpc/tcp (for nfs)
-          description = "Allow incoming sunrpc/tcp from application subnet (for nfs)"
-          direction   = "ingress"
-          source      = local.application1_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 111
-            max = 111
-          }
-        },
-        {
-          # incoming connections from application subnet for nfs/tcp
-          description = "Allow incoming nfs/tcp from application subnet"
-          direction   = "ingress"
-          source      = local.application1_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 2048
-            max = 2050
-          }
-        },
-        {
-          # incoming connections from application subnet for sunrpc/udp (for nfs)
-          description = "Allow incoming sunrpc/udp from application subnet (for nfs)"
-          direction   = "ingress"
-          source      = local.application1_cidr
-          protocol    = local.udp
-          udp_options = {
-            min = 111
-            max = 111
-          }
-        },
-        {
-          # incoming connections from application subnet for nfs/udp
-          description = "Allow incoming nfs/udp from application subnet"
-          direction   = "ingress"
-          source      = local.application1_cidr
-          protocol    = local.udp
-          udp_options = {
-            min = 2048
-            max = 2048
-          }
-        },
-        {
-          # incoming connections from application subnet for kafka/tcp
-          description = "Allow incoming kafka/tcp from application subnet"
-          direction   = "ingress"
-          source      = local.application1_cidr
-          protocol    = local.tcp
-          tcp_options = {
-            min = 9092
-            max = 9092
-          }
-        },
-        # egress rules
-        {
-          # all connections between data subnet instances are allowed
-          description = "Allow all traffic between data subnet instances"
-          direction   = "egress"
-          destination = local.data1_cidr
-          protocol    = local.anyproto
-        },
-        {
-          # this is primarily for ScaleGrid per requirements: https://help.scalegrid.io/docs/prerequisites
-          description = "Allow outgoing http to anywhere"
-          direction   = "egress"
-          destination = local.anywhere
-          protocol    = local.tcp
-          tcp_options = {
-            min = 80
-            max = 80
-          }
-        },
-        {
-          # this is primarily for ScaleGrid per requirements: https://help.scalegrid.io/docs/prerequisites
-          description = "Allow outgoing https to anywhere/Internet"
-          direction   = "egress"
-          destination = local.anywhere
-          protocol    = local.tcp
-          tcp_options = {
-            min = 443
-            max = 443
-          }
-        },
-        {
-          # this is primarily for ScaleGrid per requirements: https://help.scalegrid.io/docs/prerequisites
-          description = "Allow outgoing amqp to anywhere"
-          direction   = "egress"
-          destination = local.anywhere
-          protocol    = local.tcp
-          tcp_options = {
-            min = 5671
-            max = 5671
-          }
-        },
-      ],
-      local.ingress_icmp, local.egress_icmp, local.bastion_private)
+          description       = "VPN" 
+          destination       = "10.99.16.0/20" 
+          destination_type  = "CIDR_BLOCK" 
+          network_entity_id = "ocid1.drg.oc1.me-jeddah-1.aaaaaaaaaicnyajetykbzoia5faqcxbohqs65lr2hbzpri5sevlmy27abeyq"
+        }
+     ]
     }
+  
   }
 }
+

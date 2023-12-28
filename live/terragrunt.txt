@@ -45,15 +45,9 @@ provider "oci" {
 }
 
 %{~ if contains(keys(local.providers), "kubernetes") || contains(keys(local.providers), "helm") || contains(keys(local.providers), "kubectl") ~}
-data "oci_containerengine_clusters" "this" {
-  name           = "${local.environment_vars.locals.cluster_name}"
-  compartment_id = "${local.environment_vars.locals.compartment_id}"
-  state          = ["ACTIVE"]
-}
-
 # get kubeconf for kubernetes, helm, and kubectl
 data "oci_containerengine_cluster_kube_config" "this" {
-  cluster_id =  data.oci_containerengine_clusters.this.clusters[0].id
+  cluster_id = var.cluster_id
 }
 
 %{~ endif ~}
@@ -108,7 +102,6 @@ provider "kubectl" {
     }
   }
 }
-
 %{~ endif ~}
 EOF
 }

@@ -1,19 +1,19 @@
-terraform {
-  required_providers {
-    oci = {
-      source  = "oracle/oci"
-    }
+#terraform {
+#  required_providers {
+#    oci = {
+#      source  = "oracle/oci"
+#    }
 
-    tls = {
-      source  = "hashicorp/tls"
-    }
+ #   tls = {
+ #     source  = "hashicorp/tls"
+#    }
 
     # need this for image-pull
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-    }
-  }
-}
+ #   kubernetes = {
+ #     source  = "hashicorp/kubernetes"
+ #   }
+ # }
+#}
 
 locals {
   # network labels
@@ -70,6 +70,7 @@ resource "oci_containerengine_cluster" "this" {
   endpoint_config {
     is_public_ip_enabled = false
     nsg_ids              = [oci_core_network_security_group.api.id]
+   # subnet_id            = var.public_subnet_id
     subnet_id            = var.private_subnet_id
   }
 

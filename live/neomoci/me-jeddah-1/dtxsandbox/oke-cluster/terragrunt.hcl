@@ -40,6 +40,7 @@ dependencies {
   ]
 }
 
+
 inputs = {
   # cluster is named the same as the VCN which is named the same as the environment
   name               = dependency.vcn.outputs.name
@@ -48,6 +49,7 @@ inputs = {
   compartment_id     = dependency.vcn.outputs.compartment_id
   public_subnet_id   = dependency.vcn.outputs.subnets["public1"].id
   private_subnet_id  = dependency.vcn.outputs.subnets["application1"].id
+  data_subnet_cidr   = dependency.vcn.outputs.subnets["data1"].id
   kubernetes_version = local.kubernetes_version
   bastion_nsg_id     = dependency.vcn.outputs.bastion_nsg_id
   service_id_secret  = local.env_vars.locals.service_id_secret
