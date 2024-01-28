@@ -5,6 +5,7 @@ provider "registry.terraform.io/gavinbunney/kubectl" {
   version = "1.14.0"
   hashes = [
     "h1:gLFn+RvP37sVzp9qnFCwngRjjFV649r6apjxvJ1E/SE=",
+    "h1:tK3u7J4Ojrnx62lRvLok/XGvA7gzMkaVqNOZUDzWKOw=",
     "zh:0350f3122ff711984bbc36f6093c1fe19043173fad5a904bce27f86afe3cc858",
     "zh:07ca36c7aa7533e8325b38232c77c04d6ef1081cb0bac9d56e8ccd51f12f2030",
     "zh:0c351afd91d9e994a71fe64bbd1662d0024006b3493bb61d46c23ea3e42a7cf5",
@@ -20,6 +21,7 @@ provider "registry.terraform.io/gavinbunney/kubectl" {
 provider "registry.terraform.io/hashicorp/kubernetes" {
   version = "2.24.0"
   hashes = [
+    "h1:4ojr5ZPWH3v4sTuFtJIrgT6DGPFqekcFaStbSQ2JLr0=",
     "h1:u9lRMCdNXcB5/WQTZVMvGhNliW2pKOzj3SOVbu9yPpg=",
     "zh:0ed83ec390a7e75c4990ebce698f14234de2b6204ed9a01cd042bb7ea5f26564",
     "zh:195150e4fdab259c70088528006f4604557a051e037ebe8de64e92840f27e40a",
@@ -40,6 +42,7 @@ provider "registry.terraform.io/oracle/oci" {
   version = "5.22.0"
   hashes = [
     "h1:/rlf9fDFY6Xorj+Eu/yRrddJSuQnRxvYyL5NQCMOSMc=",
+    "h1:i8mL79EnLbMJN4fhyG1xSAfA7h363aw9FIg+GAL4O8U=",
     "zh:02490a2adff7c4ff0cebedeb7889fbf9dcf7aed90b5ddc67a77be5c58d83320c",
     "zh:186a2045555c025c697a006994539c641d7a3007c740881766321d64081f2d63",
     "zh:2f6262a1bad5860288b5395b5a5b5200552118f11f37f4d1a6a43294c8d54114",

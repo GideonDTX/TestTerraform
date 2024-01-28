@@ -72,8 +72,8 @@ dependency "cluster" {
 
 dependencies {
   paths = [
-    "../oke-cluster",
-    "../oke-calico",
+    "../oke-cluster"
+#    "../oke-calico",
   ]
 }
 

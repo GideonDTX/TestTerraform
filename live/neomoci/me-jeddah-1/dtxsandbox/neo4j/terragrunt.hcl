@@ -44,6 +44,6 @@ inputs = {
   compartment_id       = local.env_vars.locals.compartment_id
   compartment_name     = local.env_vars.locals.compartment_name
   cluster_name         = dependency.cluster.outputs.name
-  kubernetes_namespace = local.env_vars.locals.environment
+  kubernetes_namespace = "dtxtest"  #local.env_vars.locals.environment
   container_repo_host  = local.region_vars.locals.container_repo_host
 }
