@@ -7,15 +7,15 @@ resource "oci_identity_policy" "filesvc-bucket" {
   compartment_id = var.compartment_id
 
   statements = [
-    "Allow group ${local.service_id.group} to read objectstorage-namespaces in compartment ${var.compartment_name}",
-    "Allow group ${local.service_id.group} to manage objectstorage-namespaces in compartment ${var.compartment_name}",
-    "Allow group ${local.service_id.group} to manage buckets in compartment ${var.compartment_name} where all { target.bucket.name = '${local.filesvc_bucket_name}', request.permission = 'PAR_MANAGE'}",
-    "Allow group ${local.service_id.group} to inspect buckets in compartment ${var.compartment_name}",
-    "Allow group ${local.service_id.group} to read buckets in compartment ${var.compartment_name} where target.bucket.name = '${local.filesvc_bucket_name}'",
-    "Allow group ${local.service_id.group} to inspect objects in compartment ${var.compartment_name} where target.bucket.name = '${local.filesvc_bucket_name}'",
-    "Allow group ${local.service_id.group} to read objects in compartment ${var.compartment_name} where target.bucket.name = '${local.filesvc_bucket_name}'",
-    "Allow group ${local.service_id.group} to use objects in compartment ${var.compartment_name} where target.bucket.name = '${local.filesvc_bucket_name}'",
-    "Allow group ${local.service_id.group} to manage objects in compartment ${var.compartment_name} where target.bucket.name = '${local.filesvc_bucket_name}'"
+    "Allow group ${local.service_id.email} to read objectstorage-namespaces in compartment ${var.compartment_name}",
+    "Allow group ${local.service_id.email} to manage objectstorage-namespaces in compartment ${var.compartment_name}",
+    "Allow group ${local.service_id.email} to manage buckets in compartment ${var.compartment_name} where all { target.bucket.name = '${local.filesvc_bucket_name}', request.permission = 'PAR_MANAGE'}",
+    "Allow group ${local.service_id.email} to inspect buckets in compartment ${var.compartment_name}",
+    "Allow group ${local.service_id.email} to read buckets in compartment ${var.compartment_name} where target.bucket.name = '${local.filesvc_bucket_name}'",
+    "Allow group ${local.service_id.email} to inspect objects in compartment ${var.compartment_name} where target.bucket.name = '${local.filesvc_bucket_name}'",
+    "Allow group ${local.service_id.email} to read objects in compartment ${var.compartment_name} where target.bucket.name = '${local.filesvc_bucket_name}'",
+    "Allow group ${local.service_id.email} to use objects in compartment ${var.compartment_name} where target.bucket.name = '${local.filesvc_bucket_name}'",
+    "Allow group ${local.service_id.email} to manage objects in compartment ${var.compartment_name} where target.bucket.name = '${local.filesvc_bucket_name}'"
   ]
 }
 

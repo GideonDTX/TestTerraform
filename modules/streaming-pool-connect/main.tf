@@ -210,14 +210,14 @@ resource "oci_streaming_connect_harness" "this" {
 
 resource "oci_identity_policy" "this" {
   name           = "${var.name}-policy"
-  description    = "allow ${local.service_id.group} permissions to streaming"
+  description    = "allow ${local.service_id.email} permissions to streaming"
   compartment_id = var.compartment_id
 
   statements = [
-    "Allow group ${local.service_id.group} to manage connect-harness in compartment ${var.compartment_name} where target.connectharness.id = '${oci_streaming_connect_harness.this.id}'",
-    "Allow group ${local.service_id.group} to manage streams in compartment ${var.compartment_name} where target.streampool.id = '${oci_streaming_stream_pool.this.id}'",
-    "Allow group ${local.service_id.group} to use stream-push in compartment ${var.compartment_name} where target.streampool.id = '${oci_streaming_stream_pool.this.id}'",
-    "Allow group ${local.service_id.group} to use stream-pull in compartment ${var.compartment_name} where target.streampool.id = '${oci_streaming_stream_pool.this.id}'",
+    "Allow group ${local.service_id.email} to manage connect-harness in compartment ${var.compartment_name} where target.connectharness.id = '${oci_streaming_connect_harness.this.id}'",
+    "Allow group ${local.service_id.email} to manage streams in compartment ${var.compartment_name} where target.streampool.id = '${oci_streaming_stream_pool.this.id}'",
+    "Allow group ${local.service_id.email} to use stream-push in compartment ${var.compartment_name} where target.streampool.id = '${oci_streaming_stream_pool.this.id}'",
+    "Allow group ${local.service_id.email} to use stream-pull in compartment ${var.compartment_name} where target.streampool.id = '${oci_streaming_stream_pool.this.id}'",
   ]
 }
 

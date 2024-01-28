@@ -11,7 +11,7 @@ resource "oci_identity_policy" "smtp" {
   compartment_id = var.compartment_id
 
   statements = [
-    "Allow group ${local.service_id.group} to use approved-senders in compartment ${var.compartment_name}",
+    "Allow group ${local.service_id.email} to use approved-senders in compartment ${var.compartment_name}",
   ]
 }
 

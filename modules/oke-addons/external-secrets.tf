@@ -8,8 +8,8 @@ resource "oci_identity_policy" "external-secrets-read-vault" {
     "Allow dynamic-group ${var.cluster_workers_group} to read secret-family in compartment ${var.compartment_name}",
     "Allow dynamic-group ${var.cluster_workers_group} to use key-family in compartment ${var.compartment_name} ",
     # service id for testing
-    "Allow group ${local.service_id.group} to read secret-family in compartment ${var.compartment_name}",
-    "Allow group ${local.service_id.group} to use key-family in compartment ${var.compartment_name} ",
+    "Allow group ${local.service_id.email} to read secret-family in compartment ${var.compartment_name}",
+    "Allow group ${local.service_id.email} to use key-family in compartment ${var.compartment_name} ",
   ]
 }
 
