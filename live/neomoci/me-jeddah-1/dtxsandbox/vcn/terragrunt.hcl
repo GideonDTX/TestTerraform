@@ -161,25 +161,7 @@ inputs = {
           destination       = "0.0.0.0/0"
           destination_type  = "CIDR_BLOCK"
           network_entity_id = "NAT_GATEWAY"
-       },
-       {
-          description       = "VPN"
-          destination       = "10.99.16.0/20"
-          destination_type  = "CIDR_BLOCK"
-          network_entity_id = "ocid1.drg.oc1.me-jeddah-1.aaaaaaaaaicnyajetykbzoia5faqcxbohqs65lr2hbzpri5sevlmy27abeyq"
-        },
-       {
-          description       = "CISCO_VPN"
-          destination       = "10.98.0.0/24"
-          destination_type  = "CIDR_BLOCK"
-          network_entity_id = "ocid1.drg.oc1.me-jeddah-1.aaaaaaaaaicnyajetykbzoia5faqcxbohqs65lr2hbzpri5sevlmy27abeyq"
-        },
-        {
-          description       = "All subnets route Oracle services through service gateway"
-          destination       = "all-jed-services-in-oracle-services-network" 
-          destination_type  = "SERVICE_CIDR_BLOCK" 
-          network_entity_id = "ocid1.servicegateway.oc1.me-jeddah-1.aaaaaaaatnpd2hzb45z4dfhklg52nky5mx4dvl77kxpdevvvjyh5eg64jdtq" 
-        }
+       }
       ]
     }
 
@@ -196,24 +178,6 @@ inputs = {
           destination       = "0.0.0.0/0"
           destination_type  = "CIDR_BLOCK"
           network_entity_id = "NAT_GATEWAY"
-        },
-        {
-          description       = "All subnets route Oracle services through service gateway" 
-          destination       = "all-jed-services-in-oracle-services-network" 
-          destination_type  = "SERVICE_CIDR_BLOCK" 
-          network_entity_id = "ocid1.servicegateway.oc1.me-jeddah-1.aaaaaaaatnpd2hzb45z4dfhklg52nky5mx4dvl77kxpdevvvjyh5eg64jdtq" 
-        },
-        {
-          description       = "C_VPN" 
-          destination       = "10.98.0.0/16" 
-          destination_type  = "CIDR_BLOCK" 
-          network_entity_id = "ocid1.drg.oc1.me-jeddah-1.aaaaaaaaaicnyajetykbzoia5faqcxbohqs65lr2hbzpri5sevlmy27abeyq" 
-        },
-        {
-          description       = "VPN" 
-          destination       = "10.99.16.0/20" 
-          destination_type  = "CIDR_BLOCK" 
-          network_entity_id = "ocid1.drg.oc1.me-jeddah-1.aaaaaaaaaicnyajetykbzoia5faqcxbohqs65lr2hbzpri5sevlmy27abeyq"
         }
      ]
     }

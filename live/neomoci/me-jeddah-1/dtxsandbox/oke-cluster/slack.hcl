@@ -11,6 +11,7 @@ locals {
     # need this for image-pull
     kubernetes = {
       source  = "hashicorp/kubernetes"
+      kubeconfig = "/home/opc/.kube/config"
     }
   }
 }
